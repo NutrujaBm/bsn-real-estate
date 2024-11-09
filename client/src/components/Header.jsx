@@ -25,17 +25,17 @@ function Header() {
         </Link>
         <ul className="flex gap-4">
           <Link to="/">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
+            <li className="hidden sm:inline py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">
               หน้าหลัก
             </li>
           </Link>
           <Link to="/properties">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
+            <li className="hidden sm:inline py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
               รายการอสังหาริมทรัพย์
             </li>
           </Link>
           <Link to="/contact">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
+            <li className="hidden sm:inline py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
               ติดต่อเรา
             </li>
           </Link>
@@ -50,12 +50,12 @@ function Header() {
         </form>
         <ul className="flex gap-4">
           <Link to="/register">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
+            <li className="hidden sm:inline text-slate-700 hover:underline py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
               สมัครสมาชิก
             </li>
           </Link>
           <Link to="/login">
-            <li className="text-slate-700 hover:underline">เข้าสู่ระบบ</li>
+            <li className="text-slate-700 hover:underline py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">เข้าสู่ระบบ</li>
           </Link>
         </ul>
       </div>
