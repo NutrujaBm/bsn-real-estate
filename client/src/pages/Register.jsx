@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { set } from "mongoose";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({});
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -10,15 +15,31 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await res.json();
-    console.log(data);
+
+    try {
+      setLoading(true);
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      console.log(data);
+
+      if (data.success == false) {
+        setLoading(false);
+        setError(data.message);
+        return;
+      }
+      setLoading(false);
+      setError(null);
+      navigate("/login");
+    } catch (error) {
+      setLoading(false);
+      setError(data.message);
+    }
   };
 
   return (
@@ -118,17 +139,21 @@ function Register() {
           type="submit"
           className="w-full py-3 px-5 text-lg text-white bg-[#5ece4f] rounded-lg mt-2 cursor-pointer font-medium"
         >
-          สมัครสมาชิก
+          {loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
         </button>
       </form>
       <div className="mt-4">
         <p className="text-base">
-          มีบัญชีอยู่แล้ว?{" "}
-          <a href="/login" className="text-blue-600 hover:underline text-base">
-            เข้าสู่ระบบ
-          </a>
+          มีบัญชีอยู่แล้ว?
+          <Link to={"/login"}>
+            <span className="text-blue-600 hover:underline text-base">
+              {" "}
+              เข้าสู่ระบบ
+            </span>
+          </Link>
         </p>
       </div>
+      {error && <p className="text-red-500 m">{error}</p>}
     </div>
   );
 }
