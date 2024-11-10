@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { set } from "mongoose";
 import { Link, useNavigate } from "react-router-dom";
+import OAuth from "../components/OAuth";
 
 function Register() {
   const [error, setError] = useState(null);
@@ -44,7 +45,10 @@ function Register() {
 
   return (
     <div className="p-3 max-w-lg mx-auto">
-      <h1 className="text-3xl text-center font-semibold my-10">สมัครสมาชิก</h1>
+      <h1 className="text-3xl text-center font-semibold mt-16">สมัครสมาชิก</h1>
+      <p className="text-center text-zinc-500 dark:text-zinc-400 mt-2 mb-10 text-lg">
+        สร้างบัญชีฟรีด้วยอีเมลของคุณ
+      </p>
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <label
@@ -110,7 +114,7 @@ function Register() {
             // onChange={handleChange}
           />
         </div>
-        <div className="flex items-start mb-5">
+        <div className="flex items-center  mb-5">
           <div className="flex items-center h-5">
             <input
               id="terms"
@@ -122,16 +126,13 @@ function Register() {
           </div>
           <label
             htmlFor="terms"
-            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+            className="ml-2 text-base text-gray-900 dark:text-gray-300"
           >
             ยอมรับเงื่อนไขข้อตกลง{" "}
-            <a
-              href="#"
-              className="text-blue-600 hover:underline dark:text-blue-500"
-            >
+            <a href="#" className="text-blue-600 underline dark:text-blue-500">
               คลิกที่นี่
             </a>
-            เพื่ออ่าน
+            <span className="mx-1">เพื่ออ่าน</span>
           </label>
         </div>
 
@@ -142,17 +143,19 @@ function Register() {
           {loading ? "กำลังสมัครสมาชิก..." : "สมัครสมาชิก"}
         </button>
       </form>
-      <div className="mt-4">
+      <div className="text-center mt-7">
         <p className="text-base">
           มีบัญชีอยู่แล้ว?
           <Link to={"/login"}>
-            <span className="text-blue-600 hover:underline text-base">
+            <span className="text-blue-600 font-semibold hover:underline text-base">
               {" "}
               เข้าสู่ระบบ
             </span>
           </Link>
         </p>
       </div>
+      <p className="text-center text-base mt-10 mb-5">หรือ</p>
+      <OAuth />
       {error && <p className="text-red-500 m">{error}</p>}
     </div>
   );

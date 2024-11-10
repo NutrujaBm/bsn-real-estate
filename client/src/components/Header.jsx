@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 function Header() {
+  const { currentUser } = useSelector((state) => state.user);
+
   const [activeLink, setActiveLink] = useState("/");
 
   const handleLinkClick = (link) => {
