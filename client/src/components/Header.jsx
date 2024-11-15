@@ -9,13 +9,21 @@ import {
   FaSignOutAlt,
   FaClipboardList,
 } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  logoutUserFailure,
+  logoutUserStart,
+  logoutUserSuccess,
+} from "../redux/user/userSlice.js";
 
 function Header() {
   const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // สถานะเมนู dropdown
-  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false); // สถานะเมนูบัญชี
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isListMenuOpen, setIsListMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState("/");
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -26,13 +34,32 @@ function Header() {
   };
 
   const toggleAccountMenu = () => {
-    setIsAccountMenuOpen(!isAccountMenuOpen);
+    setIsAccountMenuOpen((prev) => !prev);
   };
 
-  const [activeLink, setActiveLink] = useState("/");
+  const toggleListMenu = () => {
+    setIsListMenuOpen((prev) => !prev);
+  };
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
+  };
+
+  const handleLogout = async () => {
+    try {
+      dispatch(logoutUserStart());
+      const res = await fetch(`/api/auth/logout`);
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(logoutUserFailure(data.message));
+        return;
+      }
+
+      dispatch(logoutUserSuccess(data));
+    } catch (error) {
+      dispatch(logoutUserFailure(error.message));
+    }
   };
 
   return (
@@ -126,7 +153,6 @@ function Header() {
             )}
           </Link>
 
-          {/* เมนู Dropdown */}
           {isDropdownOpen && currentUser && (
             <div
               className="z-50 absolute top-22 right-80 text-base list-none border bg-white divide-y divide-gray-300 rounded-lg shadow-lg"
@@ -141,7 +167,6 @@ function Header() {
                 </span>
               </div>
 
-              {/* เมนูบัญชีที่มี Multi-level menu */}
               <ul className="py-2" aria-labelledby="user-menu-button">
                 <li>
                   <a
@@ -152,12 +177,11 @@ function Header() {
                     <FaUser className="inline mr-2" />
                     บัญชี
                     {isAccountMenuOpen ? (
-                      <FaAngleUp className="inline ml-32" />
+                      <FaAngleUp className="inline ml-35" />
                     ) : (
-                      <FaAngleDown className="inline ml-32" />
+                      <FaAngleDown className="inline ml-35" />
                     )}
                   </a>
-                  {/* เมนูย่อยของบัญชี */}
                   {isAccountMenuOpen && (
                     <ul className="mt-2 bg-gray-100 p-2">
                       <li>
@@ -187,41 +211,71 @@ function Header() {
                     </ul>
                   )}
                 </li>
+
                 <li>
                   <a
                     href="#"
                     className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
-                    onClick={() => {
-                      closeDropdown();
-                    }}
+                    onClick={toggleListMenu}
                   >
                     <FaClipboardList className="inline mr-2" />
                     โพสต์อสังหาริมทรัพย์
+                    {isListMenuOpen ? (
+                      <FaAngleUp className="inline ml-10" />
+                    ) : (
+                      <FaAngleDown className="inline ml-10" />
+                    )}
                   </a>
+                  {isListMenuOpen && (
+                    <ul className="mt-2 bg-gray-100 p-2">
+                      <li>
+                        <Link
+                          to="/create-listing"
+                          onClick={() => {
+                            closeDropdown();
+                            handleLinkClick("/profile");
+                          }}
+                          className="block px-8 py-4 text-gray-700 hover:bg-gray-200 border-b"
+                        >
+                          สร้างโพสต์อสังหาริมทรัพย์
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/show-listing"
+                          onClick={() => {
+                            closeDropdown();
+                            handleLinkClick("/profile/password");
+                          }}
+                          className="block px-8 py-4 text-gray-700 hover:bg-gray-200"
+                        >
+                          รายการอสังหาริมทรัพย์
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
                 </li>
+
                 <li>
                   <a
                     href="#"
                     className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
-                    onClick={() => {
-                      closeDropdown();
-                    }}
+                    onClick={closeDropdown}
                   >
                     <FaBell className="inline mr-2" />
                     การแจ้งเตือน
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="block px-4 py-4 text-base text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white "
-                    onClick={() => {
-                      closeDropdown();
-                    }}
-                  >
-                    <FaSignOutAlt className="inline mr-2" />
-                    ออกจากระบบ
-                  </a>
+                  <li>
+                    <span
+                      className="block px-4 py-4 text-base text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                      onClick={handleLogout}
+                    >
+                      <FaSignOutAlt className="inline mr-2" />
+                      ออกจากระบบ
+                    </span>
+                  </li>
                 </li>
               </ul>
             </div>
