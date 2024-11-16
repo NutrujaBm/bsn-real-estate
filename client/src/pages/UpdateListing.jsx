@@ -34,7 +34,6 @@ function UpdateListing() {
     floor: "",
     parking: "0",
     utilities: [],
-    customUtility: "",
     university: "",
     hospital: "",
     mall: "",
@@ -67,12 +66,16 @@ function UpdateListing() {
     const provinceName = event.target.value;
     setSelectedProvince(provinceName);
     const province = provincesData.find((p) => p.name === provinceName);
+
     setDistricts(province ? province.districts : []);
     setSubdistricts([]);
     setSelectedDistrict("");
+
     setFormData({
       ...formData,
       province: provinceName,
+      district: "",
+      subdistrict: "",
     });
   };
 
@@ -80,10 +83,12 @@ function UpdateListing() {
     const districtName = event.target.value;
     setSelectedDistrict(districtName);
     const district = districts.find((d) => d.name === districtName);
+
     setSubdistricts(district ? district.subdistricts : []);
     setFormData({
       ...formData,
       district: districtName,
+      subdistrict: "",
     });
   };
 
@@ -109,7 +114,24 @@ function UpdateListing() {
         console.log(data.message);
         return;
       }
-      setFormData(data);
+      setFormData({
+        ...data,
+        province: data.province || "",
+        district: data.district || "",
+        subdistrict: data.subdistrict || "",
+      });
+
+      // Set the districts and subdistricts based on the fetched data
+      const province = provincesData.find((p) => p.name === data.province);
+      if (province) {
+        setDistricts(province.districts);
+        const district = province.districts.find(
+          (d) => d.name === data.district
+        );
+        if (district) {
+          setSubdistricts(district.subdistricts);
+        }
+      }
     };
 
     fetchListing();
@@ -184,37 +206,19 @@ function UpdateListing() {
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { value, checked, id } = e.target;
 
-    // ถ้าฟิลด์ไม่ใช่ checkbox หรือ customUtility, อัพเดต formData ปกติ
-    if (type !== "checkbox" && name !== "customUtility") {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
+    setFormData((prevState) => {
+      const utilities = checked
+        ? [...prevState.utilities, value]
+        : prevState.utilities.filter((item) => item !== value);
 
-    // ถ้าเป็น checkbox: อัพเดต array ของ utilities
-    if (type === "checkbox") {
-      setFormData((prevData) => {
-        const updatedUtilities = checked
-          ? [...prevData.utilities, value] // ถ้าคลิกเลือกให้เพิ่มค่าลงใน array
-          : prevData.utilities.filter((item) => item !== value); // ถ้ายกเลิกเลือกให้ลบค่าจาก array
-
-        return {
-          ...prevData,
-          utilities: updatedUtilities,
-        };
-      });
-    }
-
-    // ถ้าเป็น customUtility: อัพเดต customUtility
-    if (name === "customUtility") {
-      setFormData((prevData) => ({
-        ...prevData,
-        customUtility: value,
-      }));
-    }
+      return {
+        ...prevState,
+        [id]: value,
+        utilities,
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -249,7 +253,7 @@ function UpdateListing() {
 
       navigate(`/listing/${data._id}`);
     } catch (error) {
-      setError(error.message);
+      setError("เกิดข้อผิดพลาด: " + error.message);
       setLoading(false);
     }
   };
@@ -269,15 +273,12 @@ function UpdateListing() {
         <div className="space-y-12">
           {/* Property Title */}
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-xl/7 font-semibold text-gray-900">
+            <h2 className="text-xl/7 font-semibold text-gray-900 underline">
               หัวข้ออสังหาริมทรัพย์
             </h2>
-            <p className="mt-1 text-base/6 text-gray-600">
-              This information will be displayed publicly so be careful what you
-              share.
-            </p>
+
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-4">
+              <div className="sm:col-span-4 mb-10">
                 <label
                   htmlFor="title"
                   className="block text-lg font-medium text-gray-900"
@@ -320,9 +321,6 @@ function UpdateListing() {
                   required
                 />
               </div>
-              <p className="mt-3 text-base/6 text-gray-600">
-                Write a few sentences about the property.
-              </p>
             </div>
 
             {/* Property Type */}
@@ -357,7 +355,7 @@ function UpdateListing() {
                     ราคาเช่า (บาท)
                   </label>
                   <input
-                    className="bg-gray-50 border rounded-s-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-60"
+                    className="bg-gray-50 border rounded-s-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-60 text-right"
                     id="price"
                     name="price"
                     type="number"
@@ -371,7 +369,7 @@ function UpdateListing() {
                 </div>
                 <div className="sm:col-span-3">
                   <select
-                    className="bg-gray-50 border rounded-e-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-40 mt-9"
+                    className="bg-gray-50 border rounded-e-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-[15px]  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-40 mt-9"
                     id="rentalType"
                     name="rentalType"
                     onChange={handleChange}
@@ -387,12 +385,9 @@ function UpdateListing() {
           </div>
 
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-xl/7 font-semibold text-gray-900">
+            <h2 className="text-xl/7 font-semibold text-gray-900 underline">
               ที่อยู่อสังหาริมทรัพย์
             </h2>
-            <p className="mt-1 text-base/6 text-gray-600">
-              Use a permanent address where you can receive mail.
-            </p>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="col-span-full">
                 <label
@@ -514,51 +509,13 @@ function UpdateListing() {
                   <GoogleMapSection onLocationSelect={handleLocationSelect} />
                 </div>
               </div>
-
-              <div className="sm:col-span-6">
-                <label
-                  htmlFor="latitude"
-                  className="block text-lg font-medium text-gray-900"
-                >
-                  Latitude
-                </label>
-                <input
-                  type="text"
-                  id="latitude"
-                  name="latitude"
-                  value={formData.latitude}
-                  disabled
-                  className="bg-gray-50 border text-lg rounded-lg w-full p-3.5 dark:bg-gray-700"
-                />
-              </div>
-
-              <div className="sm:col-span-6">
-                <label
-                  htmlFor="longitude"
-                  className="block text-lg font-medium text-gray-900"
-                >
-                  Longitude
-                </label>
-                <input
-                  type="text"
-                  id="longitude"
-                  name="longitude"
-                  value={formData.longitude}
-                  disabled
-                  className="bg-gray-50 border text-lg rounded-lg w-full p-3.5 dark:bg-gray-700"
-                />
-              </div>
             </div>
           </div>
 
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-xl/7 font-semibold text-gray-900">
+            <h2 className="text-xl/7 font-semibold text-gray-900 underline">
               รายละเอียดอสังหาริมทรัพย์เพิ่มเติม
             </h2>
-            <p className="mt-1 text-base/6 text-gray-600">
-              We'll always let you know about important changes, but you pick
-              what else you want to hear about.
-            </p>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-2 sm:col-start-1">
@@ -631,7 +588,7 @@ function UpdateListing() {
                     className="bg-gray-50 border rounded-s-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-47"
                   />
                 </div>
-                <div className="sm:col-span-2 bg-gray-200 border rounded-e-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-40 mt-9 h-14">
+                <div className="sm:col-span-2 bg-gray-200 border rounded-e-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-40 mt-[37px] h-[57px]">
                   ตร.ม.
                 </div>
               </div>
@@ -721,7 +678,7 @@ function UpdateListing() {
               สิ่งอำนวยความสะดวก
             </h2>
             <p className="mt-1 text-lg text-gray-600">
-              ไม่จำเป็นต้องติ๊กทุกช่อง แต่การมีสิ่งอำนวยความสะดวกเยอะ
+              ไม่จำเป็นต้องติ๊กเลือกทุกช่อง แต่การมีสิ่งอำนวยความสะดวกเยอะ
               อาจมีผลต่อการตัดสินใจ
             </p>
             <div className="col-span-full">
@@ -732,6 +689,7 @@ function UpdateListing() {
                     id="alarmSystem"
                     name="utilities"
                     value="ระบบเตือนภัย"
+                    checked={formData.utilities.includes("ระบบเตือนภัย")}
                     onChange={handleChange}
                     className="mr-2"
                   />
@@ -745,6 +703,7 @@ function UpdateListing() {
                     id="wifi"
                     name="utilities"
                     value="สัญญาณไวไฟ"
+                    checked={formData.utilities.includes("สัญญาณไวไฟ")}
                     onChange={handleChange}
                     className="mr-2"
                   />
@@ -758,6 +717,7 @@ function UpdateListing() {
                     id="fitness"
                     name="utilities"
                     value="ฟิตเนส"
+                    checked={formData.utilities.includes("ฟิตเนส")}
                     onChange={handleChange}
                     className="mr-2"
                   />
@@ -771,6 +731,7 @@ function UpdateListing() {
                     id="commonArea"
                     name="utilities"
                     value="พื้นที่ส่วนกลาง"
+                    checked={formData.utilities.includes("พื้นที่ส่วนกลาง")}
                     onChange={handleChange}
                     className="mr-2"
                   />
@@ -784,6 +745,7 @@ function UpdateListing() {
                     id="workspace"
                     name="utilities"
                     value="พื้นที่ทำงาน"
+                    checked={formData.utilities.includes("พื้นที่ทำงาน")}
                     onChange={handleChange}
                     className="mr-2"
                   />
@@ -797,6 +759,7 @@ function UpdateListing() {
                     id="swimmingPool"
                     name="utilities"
                     value="สระว่ายน้ำ"
+                    checked={formData.utilities.includes("สระว่ายน้ำ")}
                     onChange={handleChange}
                     className="mr-2"
                   />
@@ -810,6 +773,7 @@ function UpdateListing() {
                     id="cctv"
                     name="utilities"
                     value="กล้องวงจรปิด CCTV"
+                    checked={formData.utilities.includes("กล้องวงจรปิด CCTV")}
                     onChange={handleChange}
                     className="mr-2"
                   />
@@ -817,35 +781,16 @@ function UpdateListing() {
                     กล้องวงจรปิด CCTV
                   </label>
                 </div>
-
-                {/* เพิ่มช่องกรอกข้อมูล */}
-                <div className="col-span-full">
-                  <label htmlFor="customUtility" className="text-gray-700">
-                    เพิ่ม:
-                  </label>
-                  <input
-                    type="text"
-                    id="customUtility"
-                    name="customUtility"
-                    value={formData.customUtility}
-                    placeholder="กรอกสิ่งอำนวยความสะดวก..."
-                    onChange={handleChange}
-                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                  />
-                </div>
               </div>
             </div>
           </div>
 
           {/* สถานที่ใกล้เคียง */}
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 underline">
               สถานที่ใกล้เคียง (ถ้ามี)
             </h2>
-            <p className="mt-1 text-base text-gray-600">
-              This information will be displayed publicly so be careful what you
-              share.
-            </p>
+            <p className="mt-1 text-lg text-gray-600">ภายในรัศมี 10 กิโลเมตร</p>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               {/* มหาวิทยาลัยใกล้เคียง */}
@@ -862,7 +807,7 @@ function UpdateListing() {
                   onChange={handleChange}
                   value={formData.university}
                   type="text"
-                  placeholder="มหาวิทยาลัยใกล้เคียง ภายในรัศมี 10 กิโลเมตร"
+                  placeholder="มหาวิทยาลัยใกล้เคียง "
                   className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 w-full"
                 />
               </div>
@@ -881,7 +826,7 @@ function UpdateListing() {
                   onChange={handleChange}
                   value={formData.hospital}
                   type="text"
-                  placeholder="โรงพยาบาลใกล้เคียง ภายในรัศมี 10 กิโลเมตร"
+                  placeholder="โรงพยาบาลใกล้เคียง "
                   className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 w-full"
                 />
               </div>
@@ -900,7 +845,7 @@ function UpdateListing() {
                   onChange={handleChange}
                   value={formData.mall}
                   type="text"
-                  placeholder="ห้างสรรพสินค้า ภายในรัศมี 10 กิโลเมตร"
+                  placeholder="ห้างสรรพสินค้า "
                   className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 w-full"
                 />
               </div>
@@ -919,7 +864,7 @@ function UpdateListing() {
                   onChange={handleChange}
                   value={formData.school}
                   type="text"
-                  placeholder="โรงเรียนใกล้เคียง ภายในรัศมี 10 กิโลเมตร"
+                  placeholder="โรงเรียนใกล้เคียง"
                   className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 w-full"
                 />
               </div>
@@ -947,37 +892,14 @@ function UpdateListing() {
 
           {/* รูปภาพของอสังหาริมทรัพย์ */}
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 underline">
               รูปภาพของอสังหาริมทรัพย์
             </h2>
-            <p className="mt-1 text-lg text-gray-600">
-              This information will be displayed publicly so be careful what you
-              share.
-            </p>
+
             <div className="col-span-full">
               <div className="mt-15 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                 <div className="text-center mx-auto">
                   <FaCamera className="mx-auto text-gray-300" />
-                  <div className="mt-4 flex text-sm text-gray-600 mx-auto text-center">
-                    <label
-                      htmlFor="images"
-                      className="relative cursor-pointer rounded-md bg-white text-indigo-600 text-lg"
-                    >
-                      <span>อัปโหลดไฟล์</span>
-                      <input
-                        id="images"
-                        type="file"
-                        className="sr-only"
-                        accept="image/*"
-                        onChange={(e) => setFiles(Array.from(e.target.files))}
-                        multiple
-                      />
-                    </label>
-                    <p className="pl-1 text-lg">
-                      หรือ ลากแล้ววาง PNG, JPG, GIF ขนาดสูงสุด 2MB ต่อรูป
-                    </p>
-                  </div>
-
                   <div className="grid grid-cols-4 gap-4 mt-4 border-dashed border-2 border-gray-300 p-10 rounded-lg">
                     {formData.imageUrls.length > 0 &&
                       formData.imageUrls.map((url, index) => (
@@ -998,6 +920,25 @@ function UpdateListing() {
                         </div>
                       ))}
                   </div>
+                  <div className="mt-4 flex text-sm text-gray-600 mx-auto text-center">
+                    <label
+                      htmlFor="images"
+                      className="relative cursor-pointer rounded-md bg-white text-indigo-600 text-lg"
+                    >
+                      <span>อัปโหลดไฟล์</span>
+                      <input
+                        id="images"
+                        type="file"
+                        className="sr-only"
+                        accept="image/*"
+                        onChange={(e) => setFiles(Array.from(e.target.files))}
+                        multiple
+                      />
+                    </label>
+                    <p className="pl-1 text-lg">
+                      หรือ ลากแล้ววาง PNG, JPG, GIF ขนาดสูงสุด 2MB ต่อรูป
+                    </p>
+                  </div>
                 </div>
               </div>
               <p className="text-center text-base mt-5">
@@ -1013,16 +954,12 @@ function UpdateListing() {
 
           {/* ข้อมูลติดต่อ */}
           <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 underline">
               ข้อมูลติดต่อ
             </h2>
-            <p className="mt-1 text-lg text-gray-600">
-              This information will be displayed publicly so be careful what you
-              share.
-            </p>
 
             {/* อีเมล */}
-            <div className="mb-6">
+            <div className="mb-6 mt-10">
               <label
                 htmlFor="email"
                 className="block text-lg font-medium text-gray-900"
@@ -1056,10 +993,10 @@ function UpdateListing() {
                 type="text"
                 pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                 onChange={handleChange}
-                defaultValue={currentUser.phone}
+                defaultValue={formData.phone}
                 required
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-3 mb-5 text-base/6 text-gray-600">
                 กรุณาตรวจสอบให้แน่ใจว่าหมายเลขโทรศัพท์หลักของคุณสามารถเปิดเผยต่อสาธารณะได้
               </p>
             </div>
@@ -1078,13 +1015,12 @@ function UpdateListing() {
                 name="lineId"
                 type="text"
                 onChange={handleChange}
-                defaultValue={currentUser.lineId}
+                defaultValue={formData.lineId}
                 required
               />
             </div>
           </div>
 
-          {/* ปุ่มบันทึก */}
           <div className="mt-6 flex items-center justify-end gap-x-6">
             <button
               className="text-sm font-semibold text-gray-900"

@@ -108,11 +108,6 @@ const listingSchema = new mongoose.Schema(
       required: false,
       trim: true,
     },
-    customUtility: {
-      type: String,
-      required: false,
-      trim: true,
-    },
     university: {
       type: String,
       required: false,
@@ -142,9 +137,9 @@ const listingSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    expiryDate: {
+    expiryAt: {
       type: Date,
-      required: false,
+      required: true,
     },
     status: {
       type: String,
@@ -171,6 +166,7 @@ const listingSchema = new mongoose.Schema(
     },
     userRef: {
       type: String,
+      ref: "User",
       required: true,
     },
   },

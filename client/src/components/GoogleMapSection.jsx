@@ -41,6 +41,19 @@ function GoogleMapSection({ onLocationSelect }) {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const newPosition = {
+      ...selectedPosition,
+      [name]: parseFloat(value) || 0, // แปลงค่าเป็นตัวเลข
+    };
+    setSelectedPosition(newPosition);
+
+    if (onLocationSelect) {
+      onLocationSelect(newPosition);
+    }
+  };
+
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
@@ -57,6 +70,33 @@ function GoogleMapSection({ onLocationSelect }) {
       >
         <Marker position={selectedPosition} />
       </GoogleMap>
+      <p className="text-center mt-3 mb-5 text-base/6 text-gray-600">
+        กรุณากดคลิกตำแหน่งในแผนที่ เพื่อระบุตำแหน่ง
+      </p>
+      <div className="mb-4">
+        <label className="block mb-2 text-lg font-medium text-gray-900">
+          ละติจูด
+        </label>
+        <input
+          type="number"
+          name="lat"
+          value={selectedPosition.lat}
+          onChange={handleInputChange}
+          className="w-full p-3 rounded-lg border"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2 text-lg font-medium text-gray-900">
+          ลองจิจูด
+        </label>
+        <input
+          type="number"
+          name="lng"
+          value={selectedPosition.lng}
+          onChange={handleInputChange}
+          className="w-full p-3 rounded-lg border"
+        />
+      </div>
     </div>
   );
 }

@@ -5,14 +5,23 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
   console.log(req.body);
+
   const { username, email, password } = req.body;
+
   const hashedPassword = bcryptjs.hashSync(password, 10);
-  const newUser = new User({ username, email, password: hashedPassword });
+
+  // สร้าง User object โดยการส่ง idCard และ passport ที่ได้จาก req.body
+  const newUser = new User({
+    username,
+    email,
+    password: hashedPassword,
+  });
+
   try {
     await newUser.save();
     res.status(201).json("User created successfully");
   } catch (error) {
-    next(error);
+    next(error); // ส่งต่อ error
   }
 };
 

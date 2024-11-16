@@ -49,16 +49,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    idCard: {
+    role: {
       type: String,
-      unique: true,
-      default: null,
+      enum: ["member", "admin"],
+      default: "member",
     },
-    passport: {
-      type: String,
-      unique: true,
-      default: null,
-    },
+    // status: {
+    //   type: String,
+    //   enum: ["online", "offline"],
+    //   default: "offline",
+    // },
   },
   {
     timestamps: true,

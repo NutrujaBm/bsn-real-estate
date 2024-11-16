@@ -70,7 +70,7 @@ function Header() {
             <img
               src="/logo.png"
               alt="BSN Real Estate Logo"
-              className="h-16 sm:h-16"
+              className="h-20 sm:h-20"
             />
             <div className="flex flex-col text-left mt-0">
               <span className="hidden md:inline text-primary-600 text-md sm:text-xl leading-relaxed tracking-wide text-yellow-500 belanosima-regular">
@@ -86,7 +86,7 @@ function Header() {
         <ul className="flex gap-4 md:gap-8">
           <Link to="/" onClick={() => handleLinkClick("/")}>
             <li
-              className={`hidden lg:inline text-lg py-2 px-3 rounded w-full text-center${
+              className={`hidden lg:inline text-lg font-semibold py-2 px-3 rounded w-full text-center${
                 activeLink === "/"
                   ? "text-blue-700"
                   : "text-gray-900 hover:text-blue-700"
@@ -98,7 +98,7 @@ function Header() {
 
           <Link to="/properties" onClick={() => handleLinkClick("/properties")}>
             <li
-              className={`hidden lg:inline text-lg py-2 px-3 rounded w-full text-center${
+              className={`hidden lg:inline text-lg font-semibold py-2 px-3 rounded w-full text-center${
                 activeLink === "/properties"
                   ? "text-blue-700"
                   : "text-gray-900 hover:text-blue-700"
@@ -110,7 +110,7 @@ function Header() {
 
           <Link to="/contact" onClick={() => handleLinkClick("/contact")}>
             <li
-              className={`hidden lg:inline text-lg py-2 px-3 rounded w-full text-center${
+              className={`hidden lg:inline text-lg font-semibold py-2 px-3 rounded w-full text-center${
                 activeLink === "/contact"
                   ? "text-blue-700"
                   : "text-gray-900 hover:text-blue-700"
@@ -123,7 +123,7 @@ function Header() {
 
         <ul className="flex gap-4 md:gap-8">
           <form className="flex items-center p-3 rounded-lg border border-gray-300 focus-within:border-blue-500">
-            <FaSearch className="text-slate-600 mr-2" />
+            <FaSearch className="text-slate-600 mr-2 " />
             <input
               type="text"
               id="search-navbar"
@@ -139,7 +139,9 @@ function Header() {
                   alt="avatar"
                   className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
                 />
-                <span className="ml-2 text-gray-700 text-lg">โปรไฟล์</span>
+                <span className="ml-2 text-gray-700 text-lg">
+                  {currentUser.username}
+                </span>
                 {isDropdownOpen ? (
                   <FaAngleUp className="ml-2" />
                 ) : (
@@ -148,7 +150,7 @@ function Header() {
               </>
             ) : (
               <li className="py-2 px-3 rounded w-full text-center">
-                เข้าสู่ระบบ
+                <Link to="/login">เข้าสู่ระบบ</Link>
               </li>
             )}
           </Link>
@@ -266,6 +268,38 @@ function Header() {
                     การแจ้งเตือน
                   </a>
                 </li>
+
+                {currentUser ? (
+                  currentUser.role === "admin" ? (
+                    <>
+                      <li>
+                        <Link
+                          to="/admin"
+                          className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
+                        >
+                          ภาพรวมของระบบ
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admin/users"
+                          className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
+                        >
+                          ผู้ใช้งานภายในระบบ
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/admin/properties"
+                          className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
+                        >
+                          อสังหาริมทรัพย์ภายในระบบ
+                        </Link>
+                      </li>
+                    </>
+                  ) : null
+                ) : null}
+
                 <li>
                   <li>
                     <span

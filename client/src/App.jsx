@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./pages/Home";
@@ -10,7 +11,11 @@ import Login from "./pages/Login";
 import CreateListing from "./pages/CreateListing";
 import UpdateListing from "./pages/UpdateListing";
 import ShowListing from "./pages/ShowListing";
-import PrivateRoute from "./components/PrivateRoute";
+import AdminDashboard from "./pages/AdminDashboard";
+import UserManagement from "./pages/UserManagement";
+import PropertyManagement from "./pages/PropertyManagement";
+import PrivateRoute from "./components/PrivateRoute"; // For authentication
+import RoleRoute from "./components/RoleRoute"; // For role-based routing
 import "./App.css";
 
 function App() {
@@ -18,25 +23,31 @@ function App() {
     <BrowserRouter>
       <Header />
       <Routes>
-        {/* หน้าแรกและหน้าอื่น ๆ */}
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/listing/:listingId" element={<PropertyListings />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/login" element={<Login />} />
 
-        {/* เส้นทางที่ต้องการการยืนยันตัวตน */}
+        {/* Private Routes */}
         <Route element={<PrivateRoute />}>
+          {/* Accessible by both admin and member */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/password" element={<Password />} />
-          {/* <Route path="/profile/delete" element={<DeleteAccount />} /> */}
           <Route path="/create-listing" element={<CreateListing />} />
           <Route
             path="/update-listing/:listingId"
             element={<UpdateListing />}
           />
           <Route path="/show-listing" element={<ShowListing />} />
+        </Route>
+
+        {/* Admin-only Routes */}
+        <Route element={<PrivateRoute role="admin" />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/properties" element={<PropertyManagement />} />
         </Route>
       </Routes>
     </BrowserRouter>

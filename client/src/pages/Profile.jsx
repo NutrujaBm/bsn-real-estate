@@ -249,12 +249,23 @@ function Profile() {
             onChange={handleChange}
             className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-base focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
           ></textarea>
-          <p className="mt-3 text-sm/6 text-gray-600">
-            Write a few sentences about yourself.
-          </p>
+          <p className="mt-3 text-sm/6 text-gray-600"></p>
         </div>
 
-        <div className="w-full border-t border-gray-300 mx-auto my-4 mt-10"></div>
+        <div className="w-full border-t border-b border-gray-300 mx-auto mt-10">
+          {/* Address */}
+          <div className="mb-6">
+            <label className="block mb-2 mt-5 text-base font-medium text-gray-900 ">
+              ที่อยู่
+            </label>
+            <textarea
+              id="address"
+              defaultValue={currentUser.address}
+              onChange={handleChange}
+              className="bg-gray-50 border rounded-lg mb-10 border-gray-300 text-gray-900 text-base focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
+            ></textarea>
+          </div>
+        </div>
 
         {/* Contact Information Section */}
         <h1 className="text-xl font-semibold text-center my-7 mt-10">
@@ -364,57 +375,6 @@ function Profile() {
         </div>
 
         <div className="w-full border-t border-gray-300 mx-auto my-4 mt-10"></div>
-
-        {/* Address */}
-        <div className="mb-6">
-          <label className="block mb-2 text-base font-medium text-gray-900 ">
-            ที่อยู่
-          </label>
-          <textarea
-            id="address"
-            defaultValue={currentUser.address}
-            onChange={handleChange}
-            className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-base focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
-          ></textarea>
-        </div>
-
-        <div className="w-full border-t border-gray-300 mx-auto my-4 mt-10"></div>
-
-        {/* Id Card or Passport*/}
-        <h1 className="text-xl font-semibold text-center my-7 mt-10">
-          ข้อมูลการยืนยันตัวตน
-        </h1>
-        <p className="tracking-wider text-gray-500 md:text-lg dark:text-gray-400 mb-10 text-center">
-          จัดการข้อมูลที่จำเป็นสำหรับการยืนยันตัวตนของคุณ
-          ข้อมูลนี้จะช่วยให้เรารักษาความปลอดภัยและป้องกันการเข้าถึงที่ไม่ได้รับอนุญาตในบัญชีของคุณ
-        </p>
-        <div className="grid gap-6 mb-6 md:grid-cols-2">
-          <div className="mb-6">
-            <label className="block mb-2 text-base font-medium text-gray-900">
-              เลขบัตรประชาชน (สำหรับคนไทย)
-            </label>
-            <input
-              id="idCard"
-              type="text"
-              defaultValue={currentUser.idCard}
-              onChange={handleChange}
-              className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-base focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
-            />
-          </div>
-
-          <div className="mb-6">
-            <label className="block mb-2 text-base font-medium text-gray-900">
-              พาสปอร์ต (สำหรับชาวต่างชาติ)
-            </label>
-            <input
-              id="passport"
-              type="text"
-              defaultValue={currentUser.passport}
-              onChange={handleChange}
-              className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-base focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
-            />
-          </div>
-        </div>
 
         {/* Save Button */}
         <div className="flex justify-center">
