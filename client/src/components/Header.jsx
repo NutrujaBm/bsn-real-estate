@@ -96,7 +96,7 @@ function Header() {
             </li>
           </Link>
 
-          <Link to="/properties" onClick={() => handleLinkClick("/properties")}>
+          <Link to="/search" onClick={() => handleLinkClick("/search")}>
             <li
               className={`hidden lg:inline text-lg font-semibold py-2 px-3 rounded w-full text-center${
                 activeLink === "/properties"

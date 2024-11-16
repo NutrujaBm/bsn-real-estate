@@ -14,8 +14,8 @@ import ShowListing from "./pages/ShowListing";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserManagement from "./pages/UserManagement";
 import PropertyManagement from "./pages/PropertyManagement";
+import Search from "./pages/Search";
 import PrivateRoute from "./components/PrivateRoute"; // For authentication
-import RoleRoute from "./components/RoleRoute"; // For role-based routing
 import "./App.css";
 
 function App() {
@@ -26,6 +26,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/listing/:listingId" element={<PropertyListings />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
