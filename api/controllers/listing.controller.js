@@ -104,3 +104,29 @@ export const deleteListing = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getListing = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 9;
+    const startIndex = parseInt(req.query.startIndex) || 0;
+
+    // กำหนดค่าของ `type` ถ้าไม่มีการส่งมาจะค้นหาทั้งหมด
+    let type = req.query.type;
+
+    // ถ้าไม่มี `type` หรือเป็น "all" ให้ค้นหาทั้ง Condo และ Apartment
+    if (type === undefined || type === "all") {
+      type = { $in: ["condo", "apartment"] };
+    }
+
+    // ค้นหาเฉพาะตาม `type` ที่เลือก
+    const listings = await Listing.find({
+      type, // ค้นหาจาก type เท่านั้น
+    })
+      .limit(limit)
+      .skip(startIndex);
+
+    return res.status(200).json(listings);
+  } catch (error) {
+    next(error);
+  }
+};
