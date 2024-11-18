@@ -63,7 +63,8 @@ function Header() {
   };
 
   return (
-    <header className="bg-white shadow-md py-2">
+    <header className="bg-gradient-to-r from-[#C9D9FF] to-[#F89B9E] shadow-md py-2">
+      {/* Rest of the content */}
       <div className="flex justify-between max-w-7xl mx-auto items-center p-3">
         <Link to="/" onClick={() => handleLinkClick("/")}>
           <h1 className="font-bold text-lg sm:text-2xl flex items-center space-x-2">
