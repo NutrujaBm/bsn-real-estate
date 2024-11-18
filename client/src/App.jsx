@@ -17,6 +17,7 @@ import PropertyManagement from "./pages/PropertyManagement";
 import Search from "./pages/Search";
 import PrivateRoute from "./components/PrivateRoute"; // For authentication
 import LineContact from "./components/LineContact";
+import LatLngFinder from "./pages/LatLngFinder";
 import "./App.css";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/latLngFinder" element={<LatLngFinder />} />
 
         {/* Private Routes */}
         <Route element={<PrivateRoute />}>

@@ -11,86 +11,79 @@ export default function Home() {
   const [saleListings, setSaleListings] = useState([]);
   const [rentListings, setRentListings] = useState([]);
   SwiperCore.use([Navigation]);
-  console.log(offerListings);
+
   useEffect(() => {
     const fetchOfferListings = async () => {
       try {
         const res = await fetch("/api/listing/get?offer=true&limit=4");
         const data = await res.json();
         setOfferListings(data);
-        fetchRentListings();
       } catch (error) {
-        console.log(error);
-      }
-    };
-    const fetchRentListings = async () => {
-      try {
-        const res = await fetch("/api/listing/get?type=rent&limit=4");
-        const data = await res.json();
-        setRentListings(data);
-        fetchSaleListings();
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const fetchSaleListings = async () => {
-      try {
-        const res = await fetch("/api/listing/get?type=sale&limit=4");
-        const data = await res.json();
-        setSaleListings(data);
-      } catch (error) {
-        log(error);
+        console.error(error);
       }
     };
     fetchOfferListings();
   }, []);
+
   return (
     <div>
       {/* top */}
-      <div className="flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto">
-        <h1 className="text-slate-700 font-bold text-3xl lg:text-6xl">
+      <div
+        className="relative flex flex-col gap-6 justify-center items-center px-3 w-full text-white"
+        style={{
+          background: `url(https://cdn.pixabay.com/photo/2014/05/16/11/47/thailand-345514_1280.jpg) center no-repeat`,
+          backgroundSize: "cover",
+          height: "80vh", // ความสูง 80% ของหน้าจอ
+          width: "100vw", // ความกว้าง 100% ของหน้าจอ
+        }}
+      >
+        <div className="absolute inset-0 bg-black/50 z-0"></div>
+        <h1 className="text-slate-100 font-bold text-3xl lg:text-6xl z-10 text-center">
           เราจะช่วยคุณค้นหาสถานที่ที่คุณชื่นชอบ{" "}
-          <span className="text-slate-500">
-            ด้วยแหล่งขายบ้านและอสังหาริมทรัพย์ใกล้ตัวคุณ
-          </span>
+          <span className="text-slate-300"></span>
           <br />
-          place with ease
+          ด้วยแหล่งขายบ้านและอสังหาริมทรัพย์ใกล้ตัวคุณ
         </h1>
-        <div className="text-gray-400 text-xs sm:text-sm">
-          Sahand Estate is the best place to find your next perfect place to
-          live.
-          <br />
-          We have a wide range of properties for you to choose from.
-        </div>
         <Link
           to={"/search"}
-          className="text-xs sm:text-sm text-blue-800 font-bold hover:underline"
+          className="text-xs sm:text-sm text-blue-300 font-bold hover:underline z-10 mt-4"
         >
-          Let's get started...
+          ดูรายละเอียด เพิ่มเติม
         </Link>
       </div>
 
       {/* swiper */}
-      <Swiper navigation>
-        {offerListings &&
-          offerListings.length > 0 &&
+      <Swiper navigation slidesPerView={1} loop={true}>
+        {offerListings && offerListings.length > 0 ? (
           offerListings.map((listing) => (
-            <SwiperSlide>
+            <SwiperSlide key={listing._id}>
               <div
                 style={{
-                  background: `url(${listing.imageUrls[0]}) center no-repeat`,
+                  background: `url(${
+                    listing.imageUrls && listing.imageUrls.length > 0
+                      ? listing.imageUrls[0]
+                      : "https://cdn.pixabay.com/photo/2014/05/16/11/47/thailand-345514_1280.jpg" // fallback image
+                  }) center no-repeat`,
                   backgroundSize: "cover",
                 }}
                 className="h-[500px]"
-                key={listing._id}
               ></div>
             </SwiperSlide>
-          ))}
+          ))
+        ) : (
+          <SwiperSlide>
+            <div
+              style={{
+                background: `url(https://cdn.pixabay.com/photo/2014/05/16/11/47/thailand-345514_1280.jpg) center no-repeat`,
+                backgroundSize: "cover",
+              }}
+              className="h-[500px]"
+            ></div>
+          </SwiperSlide>
+        )}
       </Swiper>
 
       {/* listing results for offer, sale and rent */}
-
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
         {offerListings && offerListings.length > 0 && (
           <div className="">
@@ -107,46 +100,6 @@ export default function Home() {
             </div>
             <div className="flex flex-wrap gap-4">
               {offerListings.map((listing) => (
-                <ListingItem listing={listing} key={listing._id} />
-              ))}
-            </div>
-          </div>
-        )}
-        {rentListings && rentListings.length > 0 && (
-          <div className="">
-            <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-600">
-                Recent places for rent
-              </h2>
-              <Link
-                className="text-sm text-blue-800 hover:underline"
-                to={"/search?type=rent"}
-              >
-                Show more places for rent
-              </Link>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              {rentListings.map((listing) => (
-                <ListingItem listing={listing} key={listing._id} />
-              ))}
-            </div>
-          </div>
-        )}
-        {saleListings && saleListings.length > 0 && (
-          <div className="">
-            <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-600">
-                Recent places for sale
-              </h2>
-              <Link
-                className="text-sm text-blue-800 hover:underline"
-                to={"/search?type=sale"}
-              >
-                Show more places for sale
-              </Link>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              {saleListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))}
             </div>
