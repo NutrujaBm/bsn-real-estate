@@ -16,6 +16,7 @@ import UserManagement from "./pages/UserManagement";
 import PropertyManagement from "./pages/PropertyManagement";
 import Search from "./pages/Search";
 import PrivateRoute from "./components/PrivateRoute"; // For authentication
+import LineContact from "./components/LineContact";
 import "./App.css";
 
 function App() {
@@ -51,6 +52,9 @@ function App() {
           <Route path="/admin/properties" element={<PropertyManagement />} />
         </Route>
       </Routes>
+
+      {/* Add LineIcon here so it appears on every page */}
+      <LineContact />
     </BrowserRouter>
   );
 }
