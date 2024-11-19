@@ -38,12 +38,13 @@ export default function Home() {
         }}
       >
         <div className="absolute inset-0 bg-black/50 z-0"></div>
-        <h1 className="text-slate-100 font-bold text-3xl lg:text-6xl z-10 text-center">
-          เราจะช่วยคุณค้นหาสถานที่ที่คุณชื่นชอบ{" "}
-          <span className="text-slate-300"></span>
-          <br />
-          ด้วยแหล่งขายบ้านและอสังหาริมทรัพย์ใกล้ตัวคุณ
+        <h1 className="text-slate-100 font-bold text-3xl lg:text-6xl z-10 text-center leading-relaxed">
+          เราจะช่วยคุณค้นหาสถานที่ที่คุณชื่นชอบ <br />
+          <span className="text-slate-300 leading-loose text-">
+            ด้วยแหล่งขายบ้านและอสังหาริมทรัพย์ใกล้ตัวคุณ
+          </span>
         </h1>
+
         <Link
           to={"/search"}
           className="text-xs sm:text-sm text-blue-300 font-bold hover:underline z-10 mt-4"
