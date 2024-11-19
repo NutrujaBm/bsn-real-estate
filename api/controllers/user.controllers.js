@@ -110,3 +110,34 @@ export const getUserListings = async (req, res, next) => {
     return next(errorHandler(401, "You can only view your own listings!"));
   }
 };
+
+export const updatePassword = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return next(errorHandler(404, "User not found"));
+    }
+
+    // ตรวจสอบว่าผู้ใช้ส่งรหัสผ่านเก่าถูกต้องหรือไม่
+    const isOldPasswordValid = await bcrypt.compare(
+      req.body.oldPassword,
+      user.password
+    );
+
+    if (!isOldPasswordValid) {
+      return next(errorHandler(400, "Old password is incorrect"));
+    }
+
+    // แฮชรหัสผ่านใหม่
+    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+
+    // อัปเดตรหัสผ่านในฐานข้อมูล
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    return next(error);
+  }
+};
