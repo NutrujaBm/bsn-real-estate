@@ -123,7 +123,7 @@ function Header() {
         </ul>
 
         <ul className="flex gap-4 md:gap-8">
-          <form className="flex items-center p-3 rounded-lg border border-gray-300 focus-within:border-blue-500">
+          <form className="flex items-center p-3 rounded-lg border border-gray-300 focus-within:border-blue-500 bg-white">
             <FaSearch className="text-slate-600 mr-2 " />
             <input
               type="text"
