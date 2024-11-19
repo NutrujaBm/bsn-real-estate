@@ -110,3 +110,27 @@ export const getUserListings = async (req, res, next) => {
     return next(errorHandler(401, "You can only view your own listings!"));
   }
 };
+
+export const updatePassword = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const isOldPasswordValid = await bcrypt.compare(
+      req.body.oldPassword,
+      user.password
+    );
+
+    if (!isOldPasswordValid) {
+      return res
+        .status(400)
+        .json({ success: false, message: "รหัสผ่านปัจจุบันไม่ถูกต้อง" });
+    }
+
+    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "เปลี่ยนรหัสผ่านสำเร็จ" });
+  } catch (error) {
+    next(error);
+  }
+};
