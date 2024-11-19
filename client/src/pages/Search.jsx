@@ -77,7 +77,11 @@ export default function Search() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlParams = new URLSearchParams();
-    urlParams.set("type", sidebardata.type); // ส่งแค่ type
+    urlParams.set("type", sidebardata.type);
+    urlParams.set("minPrice", sidebardata.minPrice || 0);
+    urlParams.set("maxPrice", sidebardata.maxPrice || Number.MAX_SAFE_INTEGER);
+    urlParams.set("sort", sidebardata.sort || "createdAt");
+    urlParams.set("order", sidebardata.order || "desc");
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
@@ -135,6 +139,33 @@ export default function Search() {
               <span>อพาร์ตเม้น</span>
             </div>
           </div>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              placeholder="ราคาต่ำสุด"
+              value={sidebardata.minPrice || ""}
+              onChange={(e) =>
+                setSidebardata((prev) => ({
+                  ...prev,
+                  minPrice: e.target.value,
+                }))
+              }
+              className="border rounded-lg p-3"
+            />
+            <input
+              type="number"
+              placeholder="ราคาสูงสุด"
+              value={sidebardata.maxPrice || ""}
+              onChange={(e) =>
+                setSidebardata((prev) => ({
+                  ...prev,
+                  maxPrice: e.target.value,
+                }))
+              }
+              className="border rounded-lg p-3"
+            />
+          </div>
+
           {/* <div className="flex gap-2 flex-wrap items-center">
             <label className="font-semibold">Amenities:</label>
             <div className="flex gap-2">
@@ -159,17 +190,22 @@ export default function Search() {
             </div>
           </div> */}
           <div className="flex items-center gap-2">
-            <label className="font-semibold">Sort:</label>
+            <label className="font-semibold">เรียงตาม:</label>
             <select
-              onChange={handleChange}
-              defaultValue={"created_at_desc"}
               id="sort_order"
+              value={`${sidebardata.sort}_${sidebardata.order}`}
+              onChange={(e) => {
+                const [sort, order] = e.target.value.split("_");
+                setSidebardata((prev) => ({ ...prev, sort, order }));
+              }}
               className="border rounded-lg p-3"
             >
-              <option value="regularPrice_desc">Price high to low</option>
-              <option value="regularPrice_asc">Price low to hight</option>
-              <option value="createdAt_desc">Latest</option>
-              <option value="createdAt_asc">Oldest</option>
+              <option value="title_asc">เรียงตามตัวอักษร ก - ฮ</option>
+              <option value="title_desc">เรียงตามตัวอักษร ฮ - ก</option>
+              <option value="price_asc">ราคา จากต่ำไปสูง</option>
+              <option value="price_desc">ราคา จากสูงไปต่ำ</option>
+              <option value="createdAt_desc">วันที่ใหม่ล่าสุด</option>
+              <option value="createdAt_asc">วันที่เก่าสุด</option>
             </select>
           </div>
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
@@ -179,7 +215,7 @@ export default function Search() {
       </div>
       <div className="flex-1">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
-          Listing results:
+          รายการอสังหาริมทรัพย์:
         </h1>
         <div className="p-7 flex flex-wrap gap-4">
           {!loading && listings.length === 0 && (

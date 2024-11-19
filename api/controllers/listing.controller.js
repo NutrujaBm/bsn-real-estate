@@ -110,18 +110,24 @@ export const getListing = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
 
-    // กำหนดค่าของ `type` ถ้าไม่มีการส่งมาจะค้นหาทั้งหมด
+    // รับค่าประเภทและตัวเลือกการเรียงลำดับ
     let type = req.query.type;
+    const sortKey = req.query.sort || "updatedAt"; // ถ้าไม่มี ให้เรียงตามวันที่
+    const sortOrder = req.query.order === "asc" ? 1 : -1; // `asc` = 1, `desc` = -1
 
     // ถ้าไม่มี `type` หรือเป็น "all" ให้ค้นหาทั้ง Condo และ Apartment
     if (type === undefined || type === "all") {
       type = { $in: ["condo", "apartment"] };
     }
 
-    // ค้นหาเฉพาะตาม `type` ที่เลือก
+    // สร้าง object สำหรับการเรียงลำดับ
+    const sortOptions = { [sortKey]: sortOrder };
+
+    // ค้นหาข้อมูล
     const listings = await Listing.find({
-      type, // ค้นหาจาก type เท่านั้น
+      type,
     })
+      .sort(sortOptions) // เรียงลำดับ
       .limit(limit)
       .skip(startIndex);
 
