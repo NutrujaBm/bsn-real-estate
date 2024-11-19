@@ -113,50 +113,31 @@ export const getUserListings = async (req, res, next) => {
 
 export const updatePassword = async (req, res, next) => {
   try {
-<<<<<<< HEAD
-    const user = await User.findById(req.params.id);
+    const { oldPassword, password } = req.body;
 
+    if (!oldPassword || !password) {
+      return next(
+        errorHandler(400, "Old password and new password are required")
+      );
+    }
+
+    const user = await User.findById(req.params.id);
     if (!user) {
       return next(errorHandler(404, "User not found"));
     }
 
-    // ตรวจสอบว่าผู้ใช้ส่งรหัสผ่านเก่าถูกต้องหรือไม่
-=======
-    const user = await User.findById(req.user.id);
->>>>>>> 016cb497cda9303f91f154dda3bb7ba9e945d3cb
-    const isOldPasswordValid = await bcrypt.compare(
-      req.body.oldPassword,
-      user.password
-    );
-
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
     if (!isOldPasswordValid) {
-<<<<<<< HEAD
       return next(errorHandler(400, "Old password is incorrect"));
     }
 
-    // แฮชรหัสผ่านใหม่
-    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
-
-    // อัปเดตรหัสผ่านในฐานข้อมูล
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(password, 10);
     await user.save();
 
-    res.status(200).json({ message: "Password updated successfully" });
-  } catch (error) {
-    return next(error);
-=======
-      return res
-        .status(400)
-        .json({ success: false, message: "รหัสผ่านปัจจุบันไม่ถูกต้อง" });
-    }
-
-    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
-    user.password = hashedPassword;
-    await user.save();
-
-    res.status(200).json({ success: true, message: "เปลี่ยนรหัสผ่านสำเร็จ" });
+    res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" });
   } catch (error) {
     next(error);
->>>>>>> 016cb497cda9303f91f154dda3bb7ba9e945d3cb
   }
 };
