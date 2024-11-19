@@ -101,8 +101,8 @@ export default function Search() {
   };
   return (
     <div className="flex flex-col md:flex-row">
-      <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+      <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen w-[410px]">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-8 ">
           <div className="flex items-center gap-2">
             <label className="whitespace-nowrap font-semibold">
               Search Term:
@@ -150,7 +150,7 @@ export default function Search() {
                   minPrice: e.target.value,
                 }))
               }
-              className="border rounded-lg p-3"
+              className="border rounded-lg p-3  w-1/2"
             />
             <input
               type="number"
@@ -162,7 +162,7 @@ export default function Search() {
                   maxPrice: e.target.value,
                 }))
               }
-              className="border rounded-lg p-3"
+              className="border rounded-lg p-3 w-1/2"
             />
           </div>
 
