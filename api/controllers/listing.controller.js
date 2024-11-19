@@ -45,33 +45,42 @@ export const createListing = async (req, res, next) => {
 
 export const updateListing = async (req, res, next) => {
   const listing = await Listing.findById(req.params.id);
-  if (!listing) return next(errorHandler(404, "Listing not found"));
+  if (!listing) return next(errorHandler(404, "ไม่พบโพสต์"));
 
   // ตรวจสอบว่าโพสต์หมดอายุหรือยัง
-  if (listing.expiresAt < new Date()) {
-    return next(
-      errorHandler(400, "This listing has expired and cannot be updated")
-    );
+  if (listing.expiresAt < new Date() && listing.status === "active") {
+    return next(errorHandler(400, "โพสต์นี้หมดอายุแล้วและไม่สามารถอัปเดตได้"));
   }
 
   // ตรวจสอบสถานะที่อนุญาตให้เปลี่ยน
   const allowedStatuses = ["active", "completed", "closed"];
   if (req.body.status && !allowedStatuses.includes(req.body.status)) {
-    return next(errorHandler(400, "Invalid status"));
+    return next(errorHandler(400, "สถานะไม่ถูกต้อง"));
   }
 
-  // หากต้องการให้วันหมดอายุเลื่อนเมื่ออัปเดต
-  const newExpirationDate = new Date();
-  newExpirationDate.setDate(newExpirationDate.getDate() + 14); // เพิ่มวันหมดอายุใหม่
+  // ตรวจสอบสถานะและอัปเดตวันหมดอายุ
+  if (req.body.status === "active") {
+    // ถ้าสถานะเป็น active ให้คงวันหมดอายุเดิมไว้
+    req.body.expiresAt = listing.expiresAt;
+  } else if (req.body.status === "closed") {
+    // ถ้าสถานะเป็น closed ให้ต่ออายุโพสต์ใหม่
+    const newCreatedDate = new Date(); // วันที่กดต่ออายุ
+    const newExpirationDate = new Date(newCreatedDate);
+    newExpirationDate.setDate(newExpirationDate.getDate() + 14); // เพิ่มวันหมดอายุอีก 14 วัน
 
-  // กำหนดค่าใหม่ให้กับ expiresAt
-  req.body.expiresAt = newExpirationDate;
+    req.body.createdAt = newCreatedDate;
+    req.body.expiresAt = newExpirationDate;
+  }
 
-  if (req.user.id !== listing.userRef) {
-    return next(errorHandler(403, "You can only update your own listings"));
+  // ตรวจสอบว่าเป็นผู้ใช้งานคนเดียวกันหรือไม่
+  if (req.user.id.toString() !== listing.userRef.toString()) {
+    return next(
+      errorHandler(403, "คุณสามารถอัปเดตเฉพาะโพสต์ของคุณเองเท่านั้น")
+    );
   }
 
   try {
+    // อัปเดตข้อมูลโพสต์
     const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
       req.body,

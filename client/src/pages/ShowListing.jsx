@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
-import { FaEdit, FaTrashAlt, FaEllipsisV } from "react-icons/fa";
+import { FaEdit, FaTrashAlt, FaSync, FaClipboardCheck } from "react-icons/fa";
 import {
   getDownloadURL,
   getStorage,
@@ -68,6 +68,34 @@ function ShowListings() {
     }
   };
 
+  const handleStatusChanges = async (listingId, newStatus) => {
+    try {
+      const res = await fetch(`/api/listing/update/${listingId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
+
+      const updatedListing = await res.json();
+      if (updatedListing.success === false) {
+        console.log("Error updating status");
+        return;
+      }
+
+      setUserListings((prevListings) =>
+        prevListings.map((listing) =>
+          listing._id === listingId ? updatedListing : listing
+        )
+      );
+    } catch (error) {
+      console.log("Error updating status", error);
+    }
+  };
+
   const handleListingDelete = async (listingId) => {
     try {
       const res = await fetch(`/api/listing/delete/${listingId}`, {
@@ -90,12 +118,6 @@ function ShowListings() {
 
   const toggleDropdown = () => {
     setDropdownOpen((prevState) => !prevState);
-  };
-
-  const handleStatusChange = (newStatus) => {
-    setStatusFilter(newStatus);
-    handleShowListings(newStatus);
-    setDropdownOpen(false);
   };
 
   const getTypeLabel = (type) => {
@@ -155,6 +177,12 @@ function ShowListings() {
       listing.title.toLowerCase().includes(e.target.value.toLowerCase())
     );
     setUserListings(filteredListings);
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setStatusFilter(newStatus);
+    handleShowListings(newStatus);
+    setDropdownOpen(false);
   };
 
   return (
@@ -331,33 +359,97 @@ function ShowListings() {
                   <td className="px-6 py-4 text-lg">
                     {formatDateToThai(listing.updatedAt)}
                   </td>
-
                   <td className="px-6 py-4 text-lg">
-                    <div>
-                      <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
-                        <Link to={`/update-listing/${listing._id}`}>
+                    {listing.status === "active" && (
+                      <>
+                        <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
                           <li className="relative group px-3">
-                            <button className="flex items-center justify-center w-10 h-10 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-600">
-                              <FaEdit />
+                            <button
+                              className="flex items-center justify-center w-10 h-10 bg-orange-500 text-white rounded-full hover:bg-orange-600 dark:bg-orange-700 dark:hover:bg-orange-600"
+                              onClick={() =>
+                                handleStatusChanges(listing._id, "completed")
+                              }
+                            >
+                              <FaClipboardCheck />
                             </button>
                             <span className="absolute left-1/2 text-center w-22 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                              แก้ไขโพสต์
+                              เปลี่ยนสถานะเป็น "ดำเนินการเสร็จสิ้น"
                             </span>
                           </li>
-                        </Link>
-                        <li className="relative group px-3">
-                          <button
-                            className="flex items-center justify-center w-10 h-10 bg-red-500 text-white rounded-full hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600"
-                            onClick={() => handleListingDelete(listing._id)}
-                          >
-                            <FaTrashAlt />
-                          </button>
-                          <span className="absolute left-1/2 text-center w-18 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            ลบโพสต์
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
+                          <Link to={`/update-listing/${listing._id}`}>
+                            <li className="relative group px-3">
+                              <button className="flex items-center justify-center w-10 h-10 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-600">
+                                <FaEdit />
+                              </button>
+                              <span className="absolute left-1/2 text-center w-22 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                แก้ไขโพสต์
+                              </span>
+                            </li>
+                          </Link>
+                          <li className="relative group px-3">
+                            <button
+                              className="flex items-center justify-center w-10 h-10 bg-red-500 text-white rounded-full hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600"
+                              onClick={() => handleListingDelete(listing._id)}
+                            >
+                              <FaTrashAlt />
+                            </button>
+                            <span className="absolute left-1/2 text-center w-18 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              ลบโพสต์
+                            </span>
+                          </li>
+                        </ul>
+                      </>
+                    )}
+
+                    {listing.status === "closed" && (
+                      <>
+                        <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
+                          <li className="relative group px-3">
+                            <button
+                              className="flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-600"
+                              onClick={() =>
+                                handleStatusChanges(listing._id, "active")
+                              }
+                            >
+                              <FaSync />
+                            </button>
+                            <span className="absolute left-1/2 text-center w-22 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              ต่ออายุโพสต์
+                            </span>
+                          </li>
+
+                          <li className="relative group px-3">
+                            <button
+                              className="flex items-center justify-center w-10 h-10 bg-red-500 text-white rounded-full hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600"
+                              onClick={() => handleListingDelete(listing._id)}
+                            >
+                              <FaTrashAlt />
+                            </button>
+                            <span className="absolute left-1/2 text-center w-18 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              ลบโพสต์
+                            </span>
+                          </li>
+                        </ul>
+                      </>
+                    )}
+
+                    {listing.status === "completed" && (
+                      <>
+                        <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
+                          <li className="relative group px-3">
+                            <button
+                              className="flex items-center justify-center w-10 h-10 bg-red-500 text-white rounded-full hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600"
+                              onClick={() => handleListingDelete(listing._id)}
+                            >
+                              <FaTrashAlt />
+                            </button>
+                            <span className="absolute left-1/2 text-center w-18 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              ลบโพสต์
+                            </span>
+                          </li>
+                        </ul>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))

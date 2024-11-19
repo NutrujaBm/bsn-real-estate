@@ -54,9 +54,6 @@ function App() {
           <Route path="/admin/properties" element={<PropertyManagement />} />
         </Route>
       </Routes>
-
-      {/* Add LineIcon here so it appears on every page */}
-      <LineContact />
     </BrowserRouter>
   );
 }

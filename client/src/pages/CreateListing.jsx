@@ -102,7 +102,7 @@ function CreateListing() {
   };
 
   const handleImageSubmit = () => {
-    if (files.length > 0 && files.length + formData.imageUrls.length <= 1) {
+    if (files.length > 0 && files.length + formData.imageUrls.length <= 4) {
       setUploading(true);
       setImageUploadError(false);
       const promises = [];
@@ -202,7 +202,7 @@ function CreateListing() {
     e.preventDefault();
     try {
       if (formData.imageUrls.length < 1)
-        return setError("คุณต้องอัปโหลดรูปภาพอย่างน้อย 3 รูป");
+        return setError("คุณต้องอัปโหลดรูปภาพอย่างน้อย 1 รูป");
 
       const expiryAt = new Date();
       expiryAt.setDate(expiryAt.getDate() + 14); // Set expiry to 14 days from now

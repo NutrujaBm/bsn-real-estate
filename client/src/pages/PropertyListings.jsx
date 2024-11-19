@@ -136,7 +136,29 @@ function PropertyListings() {
                     </button>
                   )}
 
-                {contact && <Contact listing={listing} />}
+                {contact && (
+                  <div className="contact-section bg-gray-100 p-5 rounded-lg mt-3">
+                    {/* Display contact details */}
+                    <h3 className="text-lg font-semibold mb-3">ข้อมูลติดต่อ</h3>
+                    <p>
+                      <span className="font-bold">
+                        โทรศัพท์: {listing.phone}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="font-bold">
+                        ไอดีไลน์: {listing.lineId}
+                      </span>
+                    </p>
+                    <button
+                      onClick={() => setContact(false)}
+                      className="mt-3 p-2 bg-red-500 text-white rounded-lg"
+                    >
+                      ปิด
+                    </button>
+                  </div>
+                )}
+
                 <div className="z-10 border rounded-2xl w-32 h-12 p-3 flex items-center bg-indigo-500 text-white cursor-pointer">
                   <FaShare
                     className="text-white mr-3 ml-4" // changed text color to white
