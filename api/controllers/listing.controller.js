@@ -96,16 +96,6 @@ export const deleteListing = async (req, res, next) => {
   const listing = await Listing.findById(req.params.id);
   if (!listing) return next(errorHandler(404, "Listing not found"));
 
-  // Check if the user is an admin or the owner of the listing
-  if (req.user.role !== "admin" && req.user.id !== listing.userRef) {
-    return next(
-      errorHandler(
-        403,
-        "You can only delete your own listings or if you are an admin"
-      )
-    );
-  }
-
   try {
     await Listing.findByIdAndDelete(req.params.id);
     res.status(200).json("Listing has been deleted!");

@@ -265,8 +265,7 @@ function UpdateListing() {
           แก้ไขโพสต์อสังหาริมทรัพย์ของคุณ
         </h1>
         <p className="text-gray-600 mt-2 mb-15">
-          เริ่มต้นโปรโมทอสังหาริมทรัพย์ของคุณง่ายๆ
-          ให้ผู้สนใจเข้าถึงได้ในไม่กี่คลิก
+          ปรับแต่งโพสต์อสังหาริมทรัพย์ของคุณ
         </p>
       </div>
       <form onSubmit={handleSubmit}>
@@ -283,7 +282,7 @@ function UpdateListing() {
                   htmlFor="title"
                   className="block text-lg font-medium text-gray-900"
                 >
-                  หัวข้อ
+                  หัวข้อ <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <div className="mt-2">
                   <input
@@ -306,7 +305,7 @@ function UpdateListing() {
                 htmlFor="desc"
                 className="block text-lg/6 font-medium text-gray-900"
               >
-                รายละเอียด
+                รายละเอียด <span className="text-red-500 text-sm"> *</span>
               </label>
               <div className="mt-2">
                 <textarea
@@ -330,7 +329,8 @@ function UpdateListing() {
                   htmlFor="type"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  ประเภทอสังหาริมทรัพย์
+                  ประเภทอสังหาริมทรัพย์{" "}
+                  <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <select
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -352,7 +352,8 @@ function UpdateListing() {
                     htmlFor="price"
                     className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                   >
-                    ราคาเช่า (บาท)
+                    ราคาเช่า (บาท){" "}
+                    <span className="text-red-500 text-sm"> *</span>
                   </label>
                   <input
                     className="bg-gray-50 border rounded-s-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-60 text-right"
@@ -394,7 +395,7 @@ function UpdateListing() {
                   htmlFor="address"
                   className="block text-lg/6 font-medium text-gray-900"
                 >
-                  ที่อยู่
+                  ที่อยู่ <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <div className="mt-2">
                   <textarea
@@ -421,7 +422,7 @@ function UpdateListing() {
                   htmlFor="province"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  จังหวัด
+                  จังหวัด <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <select
                   className="bg-gray-50 border text-lg rounded-lg w-full p-3.5 dark:bg-gray-700"
@@ -447,7 +448,7 @@ function UpdateListing() {
                   htmlFor="district"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  เขต / อำเภอ
+                  เขต / อำเภอ <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <select
                   className="bg-gray-50 border text-lg rounded-lg w-full p-3.5 dark:bg-gray-700"
@@ -474,7 +475,7 @@ function UpdateListing() {
                   htmlFor="subdistrict"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  แขวง / ตำบล
+                  แขวง / ตำบล <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <select
                   className="bg-gray-50 border text-lg rounded-lg w-full p-3.5 dark:bg-gray-700"
@@ -523,7 +524,7 @@ function UpdateListing() {
                   htmlFor="bedroom"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  ห้องนอน
+                  ห้องนอน <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <select
                   id="bedroom"
@@ -549,7 +550,7 @@ function UpdateListing() {
                   htmlFor="bathroom"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  ห้องน้ำ
+                  ห้องน้ำ <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <select
                   id="bathroom"
@@ -575,7 +576,8 @@ function UpdateListing() {
                     htmlFor="size"
                     className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                   >
-                    พื้นที่ใช้สอย
+                    พื้นที่ใช้สอย{" "}
+                    <span className="text-red-500 text-sm"> *</span>
                   </label>
                   <input
                     id="size"
@@ -600,7 +602,7 @@ function UpdateListing() {
                   htmlFor="roomNumber"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  หมายเลขห้อง
+                  หมายเลขห้อง <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <input
                   id="roomNumber"
@@ -637,7 +639,7 @@ function UpdateListing() {
                   htmlFor="floor"
                   className="block mb-2 text-lg font-medium text-gray-900 dark:text-white"
                 >
-                  ชั้นที่
+                  ชั้นที่ <span className="text-red-500 text-sm"> *</span>
                 </label>
                 <input
                   id="floor"
@@ -893,7 +895,8 @@ function UpdateListing() {
           {/* รูปภาพของอสังหาริมทรัพย์ */}
           <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-xl font-semibold text-gray-900 underline">
-              รูปภาพของอสังหาริมทรัพย์
+              รูปภาพของอสังหาริมทรัพย์{" "}
+              <span className="text-red-500 text-sm"> *</span>
             </h2>
 
             <div className="col-span-full">
@@ -984,7 +987,7 @@ function UpdateListing() {
                 htmlFor="phone"
                 className="block text-lg font-medium text-gray-900"
               >
-                หมายเลขโทรศัพท์
+                หมายเลขโทรศัพท์ <span className="text-red-500 text-sm"> *</span>
               </label>
               <input
                 className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3.5"
@@ -1016,7 +1019,6 @@ function UpdateListing() {
                 type="text"
                 onChange={handleChange}
                 defaultValue={formData.lineId}
-                required
               />
             </div>
           </div>

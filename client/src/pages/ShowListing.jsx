@@ -103,8 +103,8 @@ function ShowListings() {
       });
 
       const data = await res.json();
-      if (data.success === false) {
-        console.log(error.message);
+      if (res.status !== 200 || data !== "Listing has been deleted!") {
+        console.log("Error deleting listing:", data);
         return;
       }
 
@@ -112,7 +112,7 @@ function ShowListings() {
         prev.filter((listing) => listing._id !== listingId)
       );
     } catch (error) {
-      console.log(error.message);
+      console.log("Error:", error.message);
     }
   };
 
