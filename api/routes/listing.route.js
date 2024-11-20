@@ -7,6 +7,7 @@ import {
   getListings,
   updateListing,
   getListing,
+  searchListing,
 } from "../controllers/listing.controller.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.post("/create", verifyToken, createListing);
 router.post("/update/:id", verifyToken, updateListing);
 router.delete("/delete/:id", verifyToken, deleteListing);
 router.get("/get", getListing);
+router.get("/search", searchListing);
 
 export default router;

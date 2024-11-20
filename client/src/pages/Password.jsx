@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
 
 function Password() {
   const [formData, setFormData] = useState({
@@ -7,9 +6,9 @@ function Password() {
     newPassword: "",
     confirmNewPassword: "",
   });
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,124 +16,104 @@ function Password() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setError(null);
     setSuccess(false);
+    setLoading(true); // Start loading
 
-    const { currentPassword, newPassword, confirmNewPassword } = formData;
-
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setMessage("กรุณากรอกข้อมูลให้ครบถ้วน");
+    if (formData.newPassword !== formData.confirmNewPassword) {
+      setError("รหัสผ่านใหม่ไม่ตรงกัน");
+      setLoading(false); // Stop loading
       return;
     }
 
-    if (newPassword.length < 8) {
-      setMessage("รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 8 ตัวอักษร");
-      return;
-    }
-
-    if (newPassword !== confirmNewPassword) {
-      setMessage("รหัสผ่านใหม่และการยืนยันไม่ตรงกัน");
+    // Optionally, add password strength validation here
+    if (formData.newPassword.length < 8) {
+      setError("รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร");
+      setLoading(false);
       return;
     }
 
     try {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId"); // หาค่า userId จาก localStorage
-      if (!userId) {
-        setMessage("ไม่พบข้อมูลผู้ใช้");
+      const res = await fetch(`/api/user/update-password/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          oldPassword: formData.currentPassword,
+          password: formData.newPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.message || "เกิดข้อผิดพลาด");
+        setLoading(false); // Stop loading
         return;
       }
 
-      // แก้ไข URL ให้ตรงกับ userId ที่ได้จาก localStorage
-      const res = await fetch(
-        `http://localhost:3000/api/user/update-password/${userId}`,
-        {
-          method: "PUT", // เปลี่ยนจาก "POST" เป็น "PUT" ตามที่ API ต้องการ
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ใช้ token จาก localStorage
-          },
-          body: JSON.stringify({
-            oldPassword: currentPassword,
-            password: newPassword,
-          }),
-        }
-      );
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(
-          errorData.message || "เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน"
-        );
-      }
-
-      setMessage("เปลี่ยนรหัสผ่านสำเร็จ!");
       setSuccess(true);
-
-      // ลบข้อความหลังจาก 3 วินาที
-      setTimeout(() => {
-        setMessage("");
-      }, 3000);
+      setLoading(false); // Stop loading
     } catch (error) {
-      setMessage(error.message || "เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      setLoading(false); // Stop loading
     }
   };
 
   return (
-    <div className="p-4 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold text-center my-6">เปลี่ยนรหัสผ่าน</h1>
-      {message && (
-        <p
-          className={`text-center mb-4 ${
-            success ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {message}
-        </p>
-      )}
+    <div className="p-3 max-w-lg mx-auto">
+      <h1 className="text-3xl font-semibold text-center my-7">
+        เปลี่ยนรหัสผ่าน
+      </h1>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">
+        <div className="mb-6">
+          <label className="block mb-2 text-base font-medium text-gray-900">
             รหัสผ่านปัจจุบัน
           </label>
           <input
             type="password"
             name="currentPassword"
-            placeholder="ใส่รหัสผ่านปัจจุบัน"
+            placeholder="ใส่รหัสปัจจุบัน"
+            className="border p-3 rounded-lg text-base w-full"
             value={formData.currentPassword}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2">
+        <div className="mb-6">
+          <label className="block mb-2 text-base font-medium text-gray-900">
             รหัสผ่านใหม่
           </label>
           <input
             type="password"
             name="newPassword"
             placeholder="ใส่รหัสผ่านใหม่"
+            className="border p-3 rounded-lg text-base w-full"
             value={formData.newPassword}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
           />
         </div>
         <div className="mb-6">
-          <label className="block text-gray-700 font-medium mb-2">
+          <label className="block mb-2 text-base font-medium text-gray-900">
             ยืนยันรหัสผ่านใหม่
           </label>
           <input
             type="password"
             name="confirmNewPassword"
             placeholder="ยืนยันรหัสผ่านใหม่"
+            className="border p-3 rounded-lg text-base w-full"
             value={formData.confirmNewPassword}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg"
           />
         </div>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {success && (
+          <p className="text-green-500 mb-4">เปลี่ยนรหัสผ่านสำเร็จ!</p>
+        )}
+        {loading && <p className="text-gray-500 mb-4">กำลังโหลด...</p>}{" "}
+        {/* Loading indicator */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:opacity-90"
+          className="bg-blue-600 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
         >
           เปลี่ยนรหัสผ่าน
         </button>

@@ -50,8 +50,13 @@ function ListingItem({ listing }) {
         <div className="flex flex-wrap gap-3 text-sm">
           <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
             <IoBedOutline className="text-lg bg-amber-200 w-8 h-8 p-1 rounded-md" />
-            <span>{listing.bedroom} ห้องนอน</span>
+            <span>
+              {listing.bedroom === 0
+                ? "ห้องสตูดิโอ"
+                : `${listing.bedroom} ห้องนอน`}
+            </span>
           </div>
+
           <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
             <PiBathtub className="text-lg bg-amber-200 w-7 h-7 p-1 rounded-md" />
             <span>{listing.bathroom} ห้องน้ำ</span>
@@ -64,7 +69,8 @@ function ListingItem({ listing }) {
       </div>
       <hr className="border-gray-300 mt-5 mb-5" />
       <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-500">{timeAgo}</span>
+        {/* <span className="text-sm text-gray-500">{timeAgo}</span> */}
+
         <div className="flex gap-4 ml-auto">
           <span className="text-sm text-gray-500">{timeAgo}</span>
         </div>

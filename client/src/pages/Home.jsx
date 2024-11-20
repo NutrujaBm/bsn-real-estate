@@ -53,7 +53,7 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* swiper */}
+      {/* swiper
       <Swiper navigation slidesPerView={1} loop={true}>
         {offerListings && offerListings.length > 0 ? (
           offerListings.map((listing) => (
@@ -82,7 +82,7 @@ export default function Home() {
             ></div>
           </SwiperSlide>
         )}
-      </Swiper>
+      </Swiper> */}
 
       {/* listing results for offer, sale and rent */}
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
@@ -90,16 +90,17 @@ export default function Home() {
           <div className="">
             <div className="my-3">
               <h2 className="text-2xl font-semibold text-slate-600">
-                Recent offers
+                โพสต์ อสังหาริมทรัพย์ล่าสุด
               </h2>
               <Link
                 className="text-sm text-blue-800 hover:underline"
                 to={"/search?offer=true"}
               >
-                Show more offers
+                ดูรายการอสังหาริมทรัพย์
               </Link>
             </div>
-            <div className="flex flex-wrap gap-4">
+            {/* ใช้ grid สำหรับการจัดตำแหน่งโพสต์ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {offerListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))}

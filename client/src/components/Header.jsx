@@ -45,6 +45,24 @@ function Header() {
     setActiveLink(link);
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`/api/listing/search?query=${searchQuery}`);
+      const data = await response.json();
+      if (data.success) {
+        setSearchResults(data.listings);
+      } else {
+        console.error("Search failed:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       dispatch(logoutUserStart());
@@ -123,15 +141,21 @@ function Header() {
         </ul>
 
         <ul className="flex gap-4 md:gap-8">
-          <form className="flex items-center p-3 rounded-lg border border-gray-300 focus-within:border-blue-500 bg-white">
+          {/* Form Search
+          <form
+            className="flex items-center p-3 rounded-lg border border-gray-300 focus-within:border-blue-500 bg-white"
+            onSubmit={handleSearch}
+          >
             <FaSearch className="text-slate-600 mr-2 " />
             <input
               type="text"
-              id="search-navbar"
               placeholder="ค้นหา..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-transparent focus:outline-none w-24 md:w-48 md:px-2 text-base"
             />
-          </form>
+          </form> */}
+
           <Link onClick={toggleDropdown} className="flex items-center">
             {currentUser ? (
               <>
@@ -259,7 +283,7 @@ function Header() {
                   )}
                 </li>
 
-                <li>
+                {/* <li>
                   <a
                     href="#"
                     className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
@@ -268,7 +292,7 @@ function Header() {
                     <FaBell className="inline mr-2" />
                     การแจ้งเตือน
                   </a>
-                </li>
+                </li> */}
 
                 {currentUser ? (
                   currentUser.role === "admin" ? (

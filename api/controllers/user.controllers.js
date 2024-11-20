@@ -113,25 +113,27 @@ export const getUserListings = async (req, res, next) => {
 
 export const updatePassword = async (req, res, next) => {
   try {
-    const { oldPassword, password } = req.body;
-
-    if (!oldPassword || !password) {
-      return next(
-        errorHandler(400, "Old password and new password are required")
-      );
+    // Check if the user is authorized to update their password
+    if (req.user.id !== req.params.id && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized to update password" });
     }
 
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return next(errorHandler(404, "User not found"));
-    }
+    // Find the user and check if the old password is correct
+    const user = await User.findById(req.user.id);
+    const isOldPasswordValid = await bcrypt.compare(
+      req.body.oldPassword,
+      user.password
+    );
 
-    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
     if (!isOldPasswordValid) {
-      return next(errorHandler(400, "Old password is incorrect"));
+      return res.status(400).json({ message: "Old password is incorrect" });
     }
 
-    user.password = await bcrypt.hash(password, 10);
+    // Hash the new password
+    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+    user.password = hashedPassword;
     await user.save();
 
     res

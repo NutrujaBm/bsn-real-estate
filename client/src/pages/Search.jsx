@@ -28,38 +28,23 @@ export default function Search() {
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
 
-    if (
-      searchTermFromUrl ||
-      typeFromUrl ||
-      parkingFromUrl ||
-      furnishedFromUrl ||
-      offerFromUrl ||
-      sortFromUrl ||
-      orderFromUrl
-    ) {
-      setSidebardata({
-        searchTerm: searchTermFromUrl || "",
-        type: typeFromUrl || "all",
-        parking: parkingFromUrl === "true" ? true : false,
-        furnished: furnishedFromUrl === "true" ? true : false,
-        offer: offerFromUrl === "true" ? true : false,
-        sort: sortFromUrl || "created_at",
-        order: orderFromUrl || "desc",
-      });
-    }
+    setSidebardata({
+      searchTerm: searchTermFromUrl || "",
+      type: typeFromUrl || "all",
+      parking: parkingFromUrl === "true",
+      furnished: furnishedFromUrl === "true",
+      offer: offerFromUrl === "true",
+      sort: sortFromUrl || "createdAt",
+      order: orderFromUrl || "desc",
+    });
 
     const fetchListings = async () => {
       setLoading(true);
       setShowMore(false);
-      const searchQuery = urlParams.toString();
-      const res = await fetch(`/api/listing/get?${searchQuery}`);
+      const res = await fetch(`/api/listing/get?${urlParams.toString()}`);
       const data = await res.json();
-      if (data.length > 8) {
-        setShowMore(true);
-      } else {
-        setShowMore(false);
-      }
       setListings(data);
+      setShowMore(data.length > 8);
       setLoading(false);
     };
 
@@ -67,16 +52,25 @@ export default function Search() {
   }, [location.search]);
 
   const handleChange = (e) => {
-    if (e.target.id === "condo" || e.target.id === "apartment") {
-      setSidebardata({ ...sidebardata, type: e.target.id });
-    }
+    const { id, type, checked } = e.target;
 
-    // อื่น ๆ ไม่มีการเปลี่ยนแปลง
+    if (id === "condo" || id === "apartment") {
+      setSidebardata((prev) => ({
+        ...prev,
+        type: checked ? id : "all", // ตั้งค่าเป็น "all" เมื่อ `checkbox` ถูกยกเลิกการเลือก
+      }));
+    } else {
+      setSidebardata((prev) => ({
+        ...prev,
+        [id]: type === "checkbox" ? checked : e.target.value, // รองรับ `checkbox` อื่นๆ
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlParams = new URLSearchParams();
+    urlParams.set("searchTerm", sidebardata.searchTerm || "");
     urlParams.set("type", sidebardata.type);
     urlParams.set("minPrice", sidebardata.minPrice || 0);
     urlParams.set("maxPrice", sidebardata.maxPrice || Number.MAX_SAFE_INTEGER);
@@ -105,19 +99,19 @@ export default function Search() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-8 ">
           <div className="flex items-center gap-2">
             <label className="whitespace-nowrap font-semibold">
-              Search Term:
+              ค้นหาสิ่งที่สนใจ:
             </label>
             <input
               type="text"
               id="searchTerm"
-              placeholder="Search..."
+              placeholder="ค้นหา..."
               className="border rounded-lg p-3 w-full"
               value={sidebardata.searchTerm}
               onChange={handleChange}
             />
           </div>
           <div className="flex gap-2 flex-wrap items-center">
-            <label className="font-semibold">Type:</label>
+            <label className="font-semibold">ประเภท:</label>
             <div className="flex gap-2">
               <input
                 type="checkbox"
@@ -141,27 +135,41 @@ export default function Search() {
           </div>
           <div className="flex gap-2">
             <input
-              type="number"
+              type="text"
               placeholder="ราคาต่ำสุด"
-              value={sidebardata.minPrice || ""}
-              onChange={(e) =>
-                setSidebardata((prev) => ({
-                  ...prev,
-                  minPrice: e.target.value,
-                }))
+              value={
+                sidebardata.minPrice
+                  ? parseInt(sidebardata.minPrice).toLocaleString("en-US")
+                  : ""
               }
-              className="border rounded-lg p-3  w-1/2"
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/,/g, ""); // ลบ , ออกจากค่า
+                if (!isNaN(rawValue)) {
+                  setSidebardata((prev) => ({
+                    ...prev,
+                    minPrice: rawValue, // เก็บค่าโดยไม่มี ,
+                  }));
+                }
+              }}
+              className="border rounded-lg p-3 w-1/2"
             />
             <input
-              type="number"
+              type="text"
               placeholder="ราคาสูงสุด"
-              value={sidebardata.maxPrice || ""}
-              onChange={(e) =>
-                setSidebardata((prev) => ({
-                  ...prev,
-                  maxPrice: e.target.value,
-                }))
+              value={
+                sidebardata.maxPrice
+                  ? parseInt(sidebardata.maxPrice).toLocaleString("en-US")
+                  : ""
               }
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/,/g, ""); // ลบ , ออกจากค่า
+                if (!isNaN(rawValue)) {
+                  setSidebardata((prev) => ({
+                    ...prev,
+                    maxPrice: rawValue, // เก็บค่าโดยไม่มี ,
+                  }));
+                }
+              }}
               className="border rounded-lg p-3 w-1/2"
             />
           </div>
@@ -209,7 +217,7 @@ export default function Search() {
             </select>
           </div>
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
-            Search
+            ค้นหา
           </button>
         </form>
       </div>
@@ -219,11 +227,13 @@ export default function Search() {
         </h1>
         <div className="p-7 flex flex-wrap gap-4">
           {!loading && listings.length === 0 && (
-            <p className="text-xl text-slate-700">No listing found!</p>
+            <p className="text-xl text-slate-700">
+              ไม่พบข้อมูล กรุณาลองค้นหาใหม่
+            </p>
           )}
           {loading && (
             <p className="text-xl text-slate-700 text-center w-full">
-              Loading...
+              กำลังโหลดข้อมูล...
             </p>
           )}
 
@@ -238,7 +248,7 @@ export default function Search() {
               onClick={onShowMoreClick}
               className="text-green-700 hover:underline p-7 text-center w-full"
             >
-              Show more
+              แสดงเพิ่ม
             </button>
           )}
         </div>

@@ -99,7 +99,8 @@ function PropertyListings() {
                 {listing.title}
               </h1>
               <div className="bg-zinc-100 text-2xl font-bold text-violet-700">
-                {listing.price} บาท /{" "}
+                {/* ใช้ Intl.NumberFormat เพื่อเพิ่มคอมม่าให้กับราคา */}
+                {new Intl.NumberFormat("th-TH").format(listing.price)} บาท /{" "}
                 {listing.rentalType === "monthly" ? "รายเดือน" : "รายวัน"}
               </div>
             </div>
@@ -137,25 +138,29 @@ function PropertyListings() {
                   )}
 
                 {contact && (
-                  <div className="contact-section bg-gray-100 p-5 rounded-lg mt-3">
+                  <div className="contact-section bg-white p-6 border rounded-lg shadow-lg absolute top-[825px] left-[800px] transform -translate-x-1/2 z-50">
                     {/* Display contact details */}
-                    <h3 className="text-lg font-semibold mb-3">ข้อมูลติดต่อ</h3>
-                    <p>
-                      <span className="font-bold">
-                        โทรศัพท์: {listing.phone}
-                      </span>
-                    </p>
-                    <p>
-                      <span className="font-bold">
-                        ไอดีไลน์: {listing.lineId}
-                      </span>
-                    </p>
-                    <button
-                      onClick={() => setContact(false)}
-                      className="mt-3 p-2 bg-red-500 text-white rounded-lg"
-                    >
-                      ปิด
-                    </button>
+                    <h3 className="text-xl font-semibold text-center mb-4">
+                      ข้อมูลติดต่อ
+                    </h3>
+                    <div className="flex flex-col space-y-4">
+                      <p className="flex items-center space-x-2">
+                        <span className="font-bold">โทรศัพท์:</span>
+                        <span>{listing.phone}</span>
+                      </p>
+                      <p className="flex items-center space-x-2">
+                        <span className="font-bold">ไอดีไลน์:</span>
+                        <span>{listing.lineId}</span>
+                      </p>
+                    </div>
+                    <div className="flex justify-center mt-5">
+                      <button
+                        onClick={() => setContact(false)}
+                        className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300"
+                      >
+                        ปิด
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -180,13 +185,13 @@ function PropertyListings() {
               </div>
             </div>
 
-            <div className="p-5 bg-slate-200 rounded-3xl">
+            <div className="p-5 bg-slate-200 rounded-3xl w-[620px]">
               <p className="text-slate-800 border text-base">
                 <span>{listing.createdAt}</span>
               </p>
 
               {/* Description */}
-              <p className="text-slate-800 mt-3 border">
+              <p className="text-slate-800 mt-3 border ">
                 <span className="font-semibold text-black text-base">
                   คำอธิบาย -{" "}
                 </span>
@@ -206,7 +211,11 @@ function PropertyListings() {
                   <IoBedOutline className="text-lg bg-amber-200 w-8 h-8 p-1 rounded-md" />
                   <div className="ml-5">
                     <span>ห้องนอน</span>
-                    <p>{listing.bedroom} ห้อง</p>
+                    <p>
+                      {listing.bedroom === 0
+                        ? "ห้องสตูดิโอ"
+                        : `${listing.bedroom} ห้อง`}
+                    </p>
                   </div>
                 </li>
 
@@ -290,34 +299,36 @@ function PropertyListings() {
               </div>
               <div className="border"></div>
 
-              <p className="title">สถานที่ใกล้เคียง</p>
-              <div className="list-vertical">
+              <p className="text-center text-xl font-semibold mb-4">
+                สถานที่ใกล้เคียง
+              </p>
+              <div className="flex flex-col justify-center gap-4">
                 {listing.university && (
-                  <div className="feature">
+                  <div className="feature flex items-center space-x-2">
                     <FaUniversity />
                     <span>{listing.university}</span>
                   </div>
                 )}
                 {listing.school && (
-                  <div className="feature">
+                  <div className="feature flex items-center space-x-2">
                     <LiaSchoolSolid />
                     <span>{listing.school}</span>
                   </div>
                 )}
                 {listing.hospital && (
-                  <div className="feature">
+                  <div className="feature flex items-center space-x-2">
                     <PiHospital />
                     <span>{listing.hospital}</span>
                   </div>
                 )}
                 {listing.mall && (
-                  <div className="feature">
+                  <div className="feature flex items-center space-x-2">
                     <IoBagHandleOutline />
                     <span>{listing.mall}</span>
                   </div>
                 )}
                 {listing.bus && (
-                  <div className="feature">
+                  <div className="feature flex items-center space-x-2">
                     <IoBusOutline />
                     <span>{listing.bus}</span>
                   </div>

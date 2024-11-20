@@ -116,32 +116,82 @@ export const deleteListing = async (req, res, next) => {
 
 export const getListing = async (req, res, next) => {
   try {
-    const limit = parseInt(req.query.limit) || 9;
-    const startIndex = parseInt(req.query.startIndex) || 0;
+    const {
+      searchTerm,
+      type,
+      sort,
+      order,
+      minPrice,
+      maxPrice,
+      limit,
+      startIndex,
+    } = req.query;
 
-    // รับค่าประเภทและตัวเลือกการเรียงลำดับ
-    let type = req.query.type;
-    const sortKey = req.query.sort || "updatedAt"; // ถ้าไม่มี ให้เรียงตามวันที่
-    const sortOrder = req.query.order === "asc" ? 1 : -1; // `asc` = 1, `desc` = -1
+    // Default values for pagination
+    const itemsPerPage = parseInt(limit) || 9;
+    const skipItems = parseInt(startIndex) || 0;
 
-    // ถ้าไม่มี `type` หรือเป็น "all" ให้ค้นหาทั้ง Condo และ Apartment
-    if (type === undefined || type === "all") {
-      type = { $in: ["condo", "apartment"] };
+    // Build the query object
+    const query = {};
+
+    // Add search functionality for title
+    if (searchTerm) {
+      query.title = { $regex: searchTerm, $options: "i" }; // Case-insensitive search
     }
 
-    // สร้าง object สำหรับการเรียงลำดับ
+    // Filter by type if specified
+    if (type && type !== "all") {
+      query.type = type; // Exact match for the type
+    } else {
+      query.type = { $in: ["condo", "apartment"] }; // Default types if none specified
+    }
+
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      query.price = {
+        ...(minPrice ? { $gte: Number(minPrice) } : {}),
+        ...(maxPrice ? { $lte: Number(maxPrice) } : {}),
+      };
+    }
+
+    // Determine sorting options
+    const sortKey = sort || "updatedAt"; // Default sort by updatedAt
+    const sortOrder = order === "asc" ? 1 : -1; // Ascending or descending
     const sortOptions = { [sortKey]: sortOrder };
 
-    // ค้นหาข้อมูล
-    const listings = await Listing.find({
-      type,
-    })
-      .sort(sortOptions) // เรียงลำดับ
-      .limit(limit)
-      .skip(startIndex);
+    // Execute the query with pagination and sorting
+    const listings = await Listing.find(query)
+      .sort(sortOptions) // Apply sorting
+      .skip(skipItems) // Apply pagination (skip)
+      .limit(itemsPerPage); // Limit the number of results
 
+    // Return the results
     return res.status(200).json(listings);
   } catch (error) {
     next(error);
+  }
+};
+
+export const searchListing = async (req, res, next) => {
+  try {
+    const { query } = req.query; // รับคำค้นหาจาก query parameter
+
+    // ค้นหาข้อมูลในทุกฟิลด์ที่เกี่ยวข้อง
+    const listings = await Listing.find({
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { type: { $regex: query, $options: "i" } },
+        { rentalType: { $regex: query, $options: "i" } },
+        { desc: { $regex: query, $options: "i" } },
+        { address: { $regex: query, $options: "i" } },
+        { province: { $regex: query, $options: "i" } },
+        { district: { $regex: query, $options: "i" } },
+        { subdistrict: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    res.status(200).json({ success: true, listings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -17,7 +17,7 @@ router.get("/test", test);
 router.get("/all", getUsers);
 router.post("/update/:id", verifyToken, updateUser);
 router.delete("/delete/:id", verifyToken, deleteUser);
-router.put("/update-password/:id", verifyToken, updatePassword);
+router.post("/update-password/:id", verifyToken, updatePassword);
 
 // เส้นทางนี้ใช้สำหรับผู้ใช้แต่ละคน
 router.get("/listings/:id", verifyToken, getUserListings);
