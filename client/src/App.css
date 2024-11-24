@@ -50,3 +50,32 @@ body {
 .card:hover {
   transform: translateY(-5px);
 }
+
+/* ปรับขนาดปุ่มนำทางของ Swiper */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 25px; /* ปรับขนาดความกว้าง */
+  height: 25px; /* ปรับขนาดความสูง */
+}
+
+/* ปรับขนาดไอคอนภายในปุ่มนำทาง */
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 16px; /* ปรับขนาดของตัวอักษร (ลูกศร) */
+  line-height: 1; /* ปรับการจัดแนวของลูกศรให้อยู่ตรงกลาง */
+}
+
+/* ปรับขนาดและจัดตำแหน่งปุ่ม */
+.swiper-button-next,
+.swiper-button-prev {
+  display: flex;
+  align-items: center; /* จัดแนวปุ่มในแนวตั้ง */
+  justify-content: center; /* จัดแนวปุ่มในแนวนอน */
+}
+
+/* เพิ่มเอฟเฟกต์เมื่อชี้เมาส์ไปที่ปุ่ม */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: rgba(0, 0, 0, 0.5); /* ปรับสีพื้นหลังเมื่อชี้เมาส์ */
+  color: black; /* ปรับสีตัวอักษรเมื่อชี้เมาส์ */
+}

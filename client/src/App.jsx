@@ -18,6 +18,9 @@ import Search from "./pages/Search";
 import PrivateRoute from "./components/PrivateRoute"; // For authentication
 import LineContact from "./components/LineContact";
 import LatLngFinder from "./pages/LatLngFinder";
+import UserReportForm from "./pages/UserReportForm";
+import AdminReportList from "./pages/AdminReportList";
+import UserGalleryPage from "./pages/UserGalleryPage";
 import "./App.css";
 
 function App() {
@@ -45,6 +48,8 @@ function App() {
             element={<UpdateListing />}
           />
           <Route path="/show-listing" element={<ShowListing />} />
+          <Route path="/user-gallery/:userId" element={<UserGalleryPage />} />
+          <Route path="/report-form" element={<UserReportForm />} />
         </Route>
 
         {/* Admin-only Routes */}
@@ -52,6 +57,7 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/properties" element={<PropertyManagement />} />
+          <Route path="/admin/report" element={<AdminReportList />} />
         </Route>
       </Routes>
     </BrowserRouter>

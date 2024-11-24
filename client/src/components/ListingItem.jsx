@@ -69,8 +69,16 @@ function ListingItem({ listing }) {
       </div>
       <hr className="border-gray-300 mt-5 mb-5" />
       <div className="flex items-center gap-4">
-        {/* <span className="text-sm text-gray-500">{timeAgo}</span> */}
-
+        {/* <img
+          src={listing.userRef.avatar}
+          alt="User Avatar"
+          className="w-16 h-16 rounded-full object-cover mr-4"
+        />
+        <div>
+          <h1 className="text-3xl font-bold mb-2">
+            {listing.userRef.username}
+          </h1>
+        </div> */}
         <div className="flex gap-4 ml-auto">
           <span className="text-sm text-gray-500">{timeAgo}</span>
         </div>

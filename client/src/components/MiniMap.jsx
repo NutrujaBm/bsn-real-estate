@@ -2,7 +2,7 @@ import React from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 
 const miniMapStyle = {
-  width: "650px", // ขนาดของ mini map
+  width: "650px",
   height: "400px",
 };
 
@@ -27,7 +27,7 @@ function MiniMap({ latitude, longitude }) {
       center={position}
       zoom={18}
       options={{
-        disableDefaultUI: true, // ปิด UI เช่นปุ่ม Zoom หรือ Street View
+        disableDefaultUI: true,
       }}
     >
       <Marker position={position} />

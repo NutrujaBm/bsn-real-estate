@@ -95,13 +95,17 @@ export const deleteUser = async (req, res, next) => {
 
 export const getUserListings = async (req, res, next) => {
   if (req.user.id === req.params.id) {
-    const { status } = req.query; // Get the status filter from query params
-
+    const { status } = req.query;
     try {
       const filter = status
         ? { userRef: req.params.id, status }
         : { userRef: req.params.id };
-      const listings = await Listing.find(filter); // Apply status filter if provided
+
+      // เพิ่ม populate เพื่อดึงข้อมูล username และ avatar จาก userRef
+      const listings = await Listing.find(filter)
+        .populate("userRef", "username avatar") // ดึงข้อมูล userRef โดยเฉพาะ
+        .exec();
+
       res.status(200).json(listings);
     } catch (error) {
       next(error);
@@ -139,6 +143,23 @@ export const updatePassword = async (req, res, next) => {
     res
       .status(200)
       .json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserGallery = async (req, res, next) => {
+  const { status } = req.query;
+  try {
+    const filter = status
+      ? { userRef: req.params.id, status }
+      : { userRef: req.params.id };
+
+    const listings = await Listing.find(filter)
+      .populate("userRef", "username avatar aboutMe email phone lineId") // เพิ่ม email, phone, และ lineId ใน populate
+      .exec();
+
+    res.status(200).json(listings);
   } catch (error) {
     next(error);
   }

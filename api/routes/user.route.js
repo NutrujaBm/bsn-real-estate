@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deleteUser,
+  getUserGallery,
   getUserListings,
   getUsers,
   test,
@@ -21,5 +22,6 @@ router.post("/update-password/:id", verifyToken, updatePassword);
 
 // เส้นทางนี้ใช้สำหรับผู้ใช้แต่ละคน
 router.get("/listings/:id", verifyToken, getUserListings);
+router.get("/gallery/:id", verifyToken, getUserGallery);
 
 export default router;
