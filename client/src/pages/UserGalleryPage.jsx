@@ -254,17 +254,14 @@ function UserGalleryPage() {
                 </p>
               )}
             </div>
-            {userListings.length > 0 &&
-              userListings[0]?.userRef?._id &&
-              userListings[0]?.userRef?._id !== userId && (
-                <button
-                  onClick={handleReportClick}
-                  className="mt-4 flex items-center border p-2 rounded-3xl text-base bg-gray-200 hover:bg-gray-300"
-                >
-                  <CiFlag1 className="mr-3 w-6 h-6" />
-                  รายงานผู้ใช้
-                </button>
-              )}
+
+            <button
+              onClick={handleReportClick}
+              className="mt-4 flex items-center border p-2 rounded-3xl text-base bg-gray-200 hover:bg-gray-300"
+            >
+              <CiFlag1 className="mr-3 w-6 h-6" />
+              รายงานผู้ใช้
+            </button>
 
             {isPopupVisible && (
               <div className="fixed inset-0 flex justify-center items-center z-20">
