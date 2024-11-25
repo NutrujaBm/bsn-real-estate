@@ -6,7 +6,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
 import { useSelector } from "react-redux";
 import { FaMapMarkerAlt, FaUniversity } from "react-icons/fa";
-import { FaShare } from "react-icons/fa6";
+import { CiFlag1 } from "react-icons/ci";
 import {
   IoBusOutline,
   IoBedOutline,
@@ -14,7 +14,13 @@ import {
   IoCheckboxOutline,
   IoExpandOutline,
 } from "react-icons/io5";
-import { PiBathtub, PiDoorOpen, PiHospital } from "react-icons/pi";
+import { IoIosClose } from "react-icons/io";
+import {
+  PiBathtub,
+  PiDoorOpen,
+  PiHospital,
+  PiShareFatLight,
+} from "react-icons/pi";
 import { LuParkingSquare } from "react-icons/lu";
 import { LiaSchoolSolid, LiaUniversitySolid } from "react-icons/lia";
 import { TbStairs } from "react-icons/tb";
@@ -32,10 +38,45 @@ function PropertyListings() {
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [step, setStep] = useState(1);
+  const [selectedIssue, setSelectedIssue] = useState("");
+  const [description, setDescription] = useState("");
 
   const { currentUser } = useSelector((state) => state.user);
 
-  console.log(listing);
+  const descriptionText = listing?.desc || "";
+  const isLongDescription = descriptionText.split("\n").length > 3;
+  const truncatedDescription = descriptionText
+    .split("\n")
+    .slice(0, 1)
+    .join("\n");
+
+  const handleReportClick = () => {
+    setPopupVisible(true);
+  };
+
+  const handleClosePopup = () => {
+    setPopupVisible(false);
+  };
+
+  const goToNextStep = () => {
+    if (step === 1 && selectedIssue) {
+      setStep(2);
+    }
+  };
+
+  const goBackToFirstStep = () => {
+    setStep(1);
+    setDescription(""); // Clear description when going back to step 1
+  };
+
+  const handleSubmitReport = () => {
+    alert("รายงานของคุณได้ถูกส่งแล้ว");
+    // You can add functionality to send data to an API here
+    setPopupVisible(false); // Close the popup after submission
+  };
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -70,7 +111,6 @@ function PropertyListings() {
 
       {listing && !loading && !error && (
         <div className="flex flex-row justify-between">
-          {/* Left Section: Image Slider */}
           <div className="w-[55%] h-full px-5 py-10 ml-20">
             <Swiper
               navigation={{
@@ -115,7 +155,6 @@ function PropertyListings() {
 
             <div className="flex mb-5 justify-between items-center">
               <Link to={`/user-gallery/${listing.userRef._id}`}>
-                {/* User Info Section */}
                 <div className="flex items-center">
                   <img
                     className="w-12 h-12 rounded-full border"
@@ -128,84 +167,238 @@ function PropertyListings() {
                 </div>
               </Link>
 
-              {/* Action Buttons Section */}
               <div className="flex items-center space-x-4">
-                {/* Contact Button */}
-                {currentUser &&
-                  listing.userRef !== currentUser._id &&
-                  !contact && (
-                    <button
-                      onClick={() => setContact(true)}
-                      className="border rounded-2xl px-6 py-2 flex items-center bg-[#5ece4f] text-white cursor-pointer"
-                    >
-                      <MdContactPhone className="mr-2" />
-                      ข้อมูลติดต่อ
-                    </button>
-                  )}
-
-                {contact && (
-                  <div className="contact-section bg-white p-6 border rounded-lg shadow-lg absolute top-[825px] left-[50%] transform -translate-x-1/2 z-50">
-                    {/* Display contact details */}
-                    <h3 className="text-xl font-semibold text-center mb-4">
-                      ข้อมูลติดต่อ
-                    </h3>
-                    <div className="flex flex-col space-y-4">
-                      <p className="flex items-center space-x-2">
-                        <span className="font-bold">โทรศัพท์:</span>
-                        <span>{listing.phone}</span>
-                      </p>
-                      <p className="flex items-center space-x-2">
-                        <span className="font-bold">ไอดีไลน์:</span>
-                        <span>{listing.lineId}</span>
-                      </p>
-                    </div>
-                    <div className="flex justify-center mt-5">
-                      <button
-                        onClick={() => setContact(false)}
-                        className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300"
-                      >
-                        ปิด
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Share Button */}
-                <div className="border rounded-2xl w-32 h-12 px-3 flex items-center bg-indigo-500 text-white cursor-pointer">
-                  <FaShare
-                    className="mr-3"
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                      setCopied(true);
-                      setTimeout(() => {
-                        setCopied(false);
-                      }, 2000);
-                    }}
-                  />
+                <div
+                  className="border rounded-full w-25 h-12 px-3 flex items-center text-base bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopied(true);
+                    setTimeout(() => {
+                      setCopied(false);
+                    }, 2000);
+                  }}
+                >
+                  <PiShareFatLight className="ml-2 mr-1 w-6 h-6" />
                   แชร์
                 </div>
 
-                {/* Copied Message */}
                 {copied && (
-                  <p className="rounded-md bg-slate-100 p-2 text-sm text-center">
+                  <div className="absolute bottom-14 left-[920px] transform -translate-x-1/2 bg-slate-100 p-2 text-sm text-center rounded-md shadow-md z-10">
                     คัดลอกลิงก์
-                  </p>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleReportClick}
+                  className="flex items-center border p-2 rounded-3xl text-base bg-gray-200 hover:bg-gray-300"
+                >
+                  <CiFlag1 className="mr-3 w-6 h-6" />
+                  รายงาน
+                </button>
+
+                {isPopupVisible && (
+                  <div className="fixed inset-0 flex justify-center items-center z-20">
+                    <div className="bg-white p-6 rounded-lg w-96 ">
+                      {step === 1 && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
+                          <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative">
+                            <form>
+                              <div className="mb-4">
+                                <div className="border-y border-black border-opacity-10 py-2">
+                                  <p className="text-base font-medium">
+                                    รายงานโพสต์
+                                  </p>
+                                  <span className="text-base">
+                                    ปัญหาคืออะไร
+                                  </span>
+                                </div>
+
+                                <div className="flex flex-col mt-6">
+                                  <label className="flex items-center text-base mb-3">
+                                    <input
+                                      type="radio"
+                                      name="report-type"
+                                      value="incorrect-info"
+                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
+                                      onChange={() =>
+                                        setSelectedIssue(
+                                          "การให้ข้อมูลที่ไม่ถูกต้อง"
+                                        )
+                                      }
+                                    />
+                                    การให้ข้อมูลที่ไม่ถูกต้อง
+                                  </label>
+                                  <label className="flex items-center text-base mb-3">
+                                    <input
+                                      type="radio"
+                                      name="report-type"
+                                      value="incorrect-info"
+                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
+                                      onChange={() =>
+                                        setSelectedIssue("รูปภาพที่ไม่สอดคล้อง")
+                                      }
+                                    />
+                                    รูปภาพที่ไม่สอดคล้อง
+                                  </label>
+                                  <label className="flex items-center text-base mb-3">
+                                    <input
+                                      type="radio"
+                                      name="report-type"
+                                      value="incorrect-info"
+                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
+                                      onChange={() =>
+                                        setSelectedIssue(
+                                          "เนื้อหาขาดหายไปไม่ครบถ้วน"
+                                        )
+                                      }
+                                    />
+                                    เนื้อหาขาดหายไปไม่ครบถ้วน
+                                  </label>
+                                  <label className="flex items-center text-base mb-3">
+                                    <input
+                                      type="radio"
+                                      name="report-type"
+                                      value="incorrect-info"
+                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
+                                      onChange={() =>
+                                        setSelectedIssue("การโพสต์หลอกลวง")
+                                      }
+                                    />
+                                    การโพสต์หลอกลวง
+                                  </label>
+                                </div>
+                                <div className="absolute bottom-4 right-0 flex justify-between px-4">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      // ตรวจสอบว่าเลือกปัญหาหรือยัง
+                                      if (selectedIssue) {
+                                        goToNextStep(); // ไปยัง Step ถัดไป
+                                      } else {
+                                        alert(
+                                          "กรุณาเลือกปัญหาก่อนที่จะไปยังขั้นตอนถัดไป"
+                                        );
+                                      }
+                                    }}
+                                    className="px-4 py-2 rounded-full text-base text-blue-500 hover:bg-blue-100"
+                                  >
+                                    ถัดไป
+                                  </button>
+                                </div>
+                              </div>
+                            </form>
+                            <button
+                              onClick={handleClosePopup} // เรียกปิด Popup
+                              className="absolute top-10 right-3 text-gray-700"
+                            >
+                              <IoIosClose className="w-10 h-10" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {step === 2 && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
+                          <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative">
+                            <div className="border-y border-black border-opacity-10 py-2">
+                              <p className="text-base font-medium">
+                                รายงานโพสต์
+                              </p>
+                              <span className="text-base">ปัญหาคืออะไร</span>
+                            </div>
+                            <form>
+                              <div className="mb-3 mt-5">
+                                <span className="text-base">
+                                  ปัญหาที่เลือก : {selectedIssue}
+                                </span>
+                              </div>
+                              <div className="mb-5">
+                                <span className="text-base">
+                                  ชื่อโพสต์ : {listing.title}
+                                </span>
+                              </div>
+
+                              {/* ใส่รายละเอียด */}
+                              <div className="mb-4">
+                                <textarea
+                                  className="w-full h-32 border p-2 mb-4 rounded-sm text-base"
+                                  value={description}
+                                  onChange={(e) =>
+                                    setDescription(e.target.value)
+                                  }
+                                  placeholder="ระบุรายละเอียดเพิ่มเติม"
+                                ></textarea>
+                              </div>
+
+                              <div className="absolute bottom-4 left-0 right-0 flex justify-between px-4">
+                                <button
+                                  type="button"
+                                  onClick={goBackToFirstStep}
+                                  className="px-4 py-2 rounded-full text-base hover:bg-gray-200"
+                                >
+                                  กลับ
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={handleSubmitReport}
+                                  className="px-4 py-2 rounded-full text-base text-blue-500 hover:bg-blue-100"
+                                >
+                                  ส่งรายงาน
+                                </button>
+                              </div>
+
+                              <button
+                                onClick={handleClosePopup}
+                                className="absolute top-10 right-3 text-gray-700"
+                              >
+                                <IoIosClose className="w-10 h-10" />
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="p-5 bg-slate-200 rounded-3xl w-[620px]">
-              <p className="text-slate-800 border text-base">
-                <span>{listing.createdAt}</span>
+            <div className="p-5 bg-gray-200 rounded-xl w-full">
+              <p className="text-slate-800 text-base mb-5">
+                <span>
+                  {new Date(listing?.updatedAt).toLocaleDateString("th-TH", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+                <span className="text-base ml-3">
+                  ประเภทอสังหาริมทรัพย์ :{" "}
+                  {listing?.type === "condo"
+                    ? "คอนโดมิเนียม"
+                    : listing?.type === "apartment"
+                    ? "อพาร์ทเม้นท์"
+                    : listing?.type}
+                </span>
               </p>
 
-              {/* Description */}
-              <p className="text-slate-800 mt-3 border ">
-                <span className="font-semibold text-black text-base">
-                  คำอธิบาย -{" "}
-                </span>
-                {listing.desc}
+              <p className="text-slate-800 mt-3 text-base">
+                {showFullDescription || !isLongDescription ? (
+                  description
+                ) : (
+                  <span className="fade-text">{truncatedDescription}...</span>
+                )}
               </p>
+
+              {isLongDescription && (
+                <button
+                  onClick={() => setShowFullDescription((prev) => !prev)}
+                  className="text-neutral-900 mt-2 text-base underline"
+                >
+                  {showFullDescription ? "แสดงน้อยลง" : "เพิ่มเติม"}
+                </button>
+              )}
             </div>
           </div>
 
