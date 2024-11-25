@@ -29,7 +29,7 @@ function UserGalleryPage() {
 
   const userAboutMe = userListings[0]?.userRef?.aboutMe || "";
   const wordCount = countWords(userAboutMe);
-  const maxWordCount = 4;
+  const maxWordCount = 5;
 
   const getTimeAgo = (updatedAt) => {
     return formatDistanceToNowStrict(new Date(updatedAt), {
@@ -54,13 +54,12 @@ function UserGalleryPage() {
 
   const goBackToFirstStep = () => {
     setStep(1);
-    setDescription(""); // Clear description when going back to step 1
+    setDescription("");
   };
 
   const handleSubmitReport = () => {
     alert("รายงานของคุณได้ถูกส่งแล้ว");
-    // You can add functionality to send data to an API here
-    setPopupVisible(false); // Close the popup after submission
+    setPopupVisible(false);
   };
 
   useEffect(() => {
@@ -104,12 +103,12 @@ function UserGalleryPage() {
   }
 
   return (
-    <div className="p-4 px-73">
-      <div className="bg-[url('/banner1.jpg')] bg-cover bg-center h-45 rounded-xl flex flex-col justify-center items-center shadow-lg">
-        <h3 className="text-2xl font-semibold text-white px-2 mb-2">
+    <div className="p-4 px-5 xl:px-73">
+      <div className="bg-[url('/banner1.jpg')] bg-cover bg-center h-25 sm:h-35 lg:h-45 rounded-xl flex flex-col justify-center items-center shadow-lg">
+        <h3 className="text-lg sm:text-2xl font-semibold text-white px-2 mb-2">
           แกลลอรี่ส่วนตัว
         </h3>
-        <h2 className="text-4xl font-bold text-white">
+        <h2 className="text-xl sm:text-4xl font-bold text-white">
           {userListings[0]?.userRef?.username
             ? `อสังหาริมทรัพย์ของ ${userListings[0]?.userRef?.username}`
             : "อสังหาริมทรัพย์"}
@@ -117,14 +116,14 @@ function UserGalleryPage() {
       </div>
 
       {userListings[0]?.userRef && (
-        <div className="flex items-center">
+        <div className="flex items-center mt-[-30px] sm:mt-5">
           <img
             src={userListings[0]?.userRef?.avatar}
             alt="User Avatar"
-            className="w-40 h-40 rounded-full object-cover mr-4 mt-8"
+            className="w-20 h-20 sm:w-30 sm:h-30 lg:w-40 lg:h-40 rounded-full object-cover mr-4 mt-8"
           />
           <div className="py-5 mt-8">
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">
               {userListings[0]?.userRef?.username}
             </h1>
             <p className="text-gray-500 text-base">
@@ -150,7 +149,7 @@ function UserGalleryPage() {
       <div className="flex justify-center mt-6 border-b text-base">
         <button
           onClick={() => setSelectedCategory("ทั้งหมด")}
-          className={`px-6 py-2 rounded-md text-white mb-5 mr-5 ${
+          className={`px-3 py-1 sm:px-6 sm:py-2 rounded-md text-white mb-5 mr-5 text-sm sm:text-base ${
             selectedCategory === "ทั้งหมด" ? "bg-orange-400" : "bg-gray-400"
           }`}
         >
@@ -158,7 +157,7 @@ function UserGalleryPage() {
         </button>
         <button
           onClick={() => setSelectedCategory("condo")}
-          className={`px-6 py-2 rounded-md text-white mb-5 mr-5 ${
+          className={`px-6 py-2 rounded-md text-white mb-5 mr-5 text-sm sm:text-base ${
             selectedCategory === "condo" ? "bg-orange-400" : "bg-gray-400"
           }`}
         >
@@ -166,7 +165,7 @@ function UserGalleryPage() {
         </button>
         <button
           onClick={() => setSelectedCategory("apartment")}
-          className={`px-6 py-2 rounded-md text-white mb-5 mr-5 ${
+          className={`px-6 py-2 rounded-md text-white mb-5 mr-5 text-sm sm:text-base ${
             selectedCategory === "apartment" ? "bg-orange-400" : "bg-gray-400"
           }`}
         >
@@ -186,34 +185,39 @@ function UserGalleryPage() {
         </div>
       )}
 
-      {/* User Listings Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-7">
+      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mt-7 ">
         {filteredListings.map((listing) => (
           <div
             key={listing._id}
-            className="rounded-lg transition duration-300 mb-5"
+            className="rounded-lg transition duration-300 mb-5 flex md:flex-col flex-row"
           >
-            <Link to={`/listing/${listing._id}`}>
+            <Link
+              to={`/listing/${listing._id}`}
+              className="flex flex-col w-40 sm:w-full"
+            >
               <img
                 src={listing.imageUrls || "/default-image.jpg"}
                 alt={listing.title}
-                className="w-full h-48 object-cover rounded-lg mb-4"
+                className="w-full h-25 sm:w-full sm:h-40 object-cover rounded-2xl mb-[-20px] sm:mb-1"
               />
             </Link>
-            <Link to={`/listing/${listing._id}`}>
-              <h2 className="text-base font-medium text-neutral-900 mb-2">
-                {listing.title}
-              </h2>
-            </Link>
-            <p className="text-base mt-1">
-              ประเภท :{" "}
-              {listing?.type === "condo"
-                ? "คอนโดมิเนียม"
-                : listing?.type === "apartment"
-                ? "อพาร์ทเม้นท์"
-                : listing?.type}{" "}
-              | {getTimeAgo(listing.updatedAt)}
-            </p>
+
+            <div className="flex flex-col sm:flex px-5 sm:px-0 ">
+              <Link to={`/listing/${listing._id}`}>
+                <h2 className="flex text-base font-medium text-neutral-900 ">
+                  {listing.title}
+                </h2>
+              </Link>
+              <p className="text-sm xl:text-sm mt-1">
+                ประเภท :{" "}
+                {listing?.type === "condo"
+                  ? "คอนโด"
+                  : listing?.type === "apartment"
+                  ? "อพาร์ทเม้นท์"
+                  : listing?.type}{" "}
+                | {getTimeAgo(listing.updatedAt)}
+              </p>
+            </div>
           </div>
         ))}
       </div>
@@ -221,7 +225,7 @@ function UserGalleryPage() {
       {/* Popup for additional information */}
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-[540px] relative">
+          <div className="bg-white p-6 rounded-lg w-[400px] sm:w-[540px] relative">
             <button
               onClick={() => setIsPopupOpen(false)}
               className="absolute top-2 right-2 text-2xl text-gray-700"
