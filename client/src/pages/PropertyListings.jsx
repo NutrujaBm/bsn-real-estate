@@ -48,17 +48,22 @@ function PropertyListings() {
 
   const descriptionText = listing?.desc || "";
   const isLongDescription = descriptionText.split("\n").length > 3;
-  const truncatedDescription = descriptionText
-    .split("\n")
-    .slice(0, 1)
-    .join("\n");
 
+  const truncatedDescription = isLongDescription
+    ? descriptionText.split("\n").slice(0, 1).join("\n") + "..."
+    : descriptionText;
+
+  const toggleDescription = () => {
+    setShowFullDescription(!showFullDescription);
+  };
   const handleReportClick = () => {
     setPopupVisible(true);
+    document.body.classList.add("popup-open");
   };
 
   const handleClosePopup = () => {
     setPopupVisible(false);
+    document.body.classList.remove("popup-open");
   };
 
   const goToNextStep = () => {
@@ -110,8 +115,8 @@ function PropertyListings() {
       )}
 
       {listing && !loading && !error && (
-        <div className="flex flex-row justify-between">
-          <div className="w-[55%] h-full px-5 py-10 ml-20">
+        <div className="flex flex-col lg:flex-row justify-between px-4 lg:px-20 py-10">
+          <div className="w-full lg:w-[60%] h-full mb-10 lg:mb-0 mt-1 xl:ml-5 2xl:ml-10 2xl:mr-5">
             <Swiper
               navigation={{
                 nextEl: ".swiper-button-next",
@@ -122,7 +127,7 @@ function PropertyListings() {
                 <SwiperSlide key={url}>
                   <div className="flex justify-center items-center">
                     <div
-                      className="h-[550px] w-full mb-5 rounded-xl overflow-hidden border"
+                      className="h-[350px] md:h-[400px] lg:h-[550px] w-full mb-5 rounded-xl overflow-hidden border"
                       style={{
                         backgroundImage: `url(${url})`,
                         backgroundPosition: "center",
@@ -147,7 +152,7 @@ function PropertyListings() {
               </div>
             </div>
 
-            <p className="flex items-center mt-5 mb-5 gap-2 text-slate-600 text-base">
+            <p className="flex items-center mt-5 mb-5 gap-2 text-slate-600 text-sm sm:text-base ">
               <FaMapMarkerAlt className="text-red-500" />
               {listing.address}, เขต {listing.district}, แขวง{" "}
               {listing.subdistrict}, {listing.province}
@@ -187,21 +192,21 @@ function PropertyListings() {
                     คัดลอกลิงก์
                   </div>
                 )}
-
                 <button
                   onClick={handleReportClick}
                   className="flex items-center border p-2 rounded-3xl text-base bg-gray-200 hover:bg-gray-300"
+                  title="รายงาน"
                 >
-                  <CiFlag1 className="mr-3 w-6 h-6" />
-                  รายงาน
+                  <CiFlag1 className="mr-0 sm:mr-3 w-6 h-6" />
+                  <span className="hidden sm:inline">รายงาน</span>
                 </button>
 
                 {isPopupVisible && (
-                  <div className="fixed inset-0 flex justify-center items-center z-20">
+                  <div className="fixed inset-0 flex justify-center items-center z-20 ">
                     <div className="bg-white p-6 rounded-lg w-96 ">
                       {step === 1 && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
-                          <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative">
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20 ">
+                          <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative ">
                             <form>
                               <div className="mb-4">
                                 <div className="border-y border-black border-opacity-10 py-2">
@@ -384,30 +389,33 @@ function PropertyListings() {
               </p>
 
               <p className="text-slate-800 mt-3 text-base">
-                {showFullDescription || !isLongDescription ? (
-                  description
-                ) : (
-                  <span className="fade-text">{truncatedDescription}...</span>
+                {showFullDescription ? descriptionText : truncatedDescription}
+                {isLongDescription && !showFullDescription && (
+                  <button
+                    onClick={toggleDescription}
+                    className="text-neutral-950"
+                  >
+                    เพิ่มเติม
+                  </button>
+                )}
+                {showFullDescription && (
+                  <button
+                    onClick={toggleDescription}
+                    className="flex text-neutral-950 mt-5"
+                  >
+                    แสดงน้อยลง
+                  </button>
                 )}
               </p>
-
-              {isLongDescription && (
-                <button
-                  onClick={() => setShowFullDescription((prev) => !prev)}
-                  className="text-neutral-900 mt-2 text-base underline"
-                >
-                  {showFullDescription ? "แสดงน้อยลง" : "เพิ่มเติม"}
-                </button>
-              )}
             </div>
           </div>
 
           {/* Right Section: Listing Details */}
-          <div className="w-[35%] h-full py-10 mt-1 mr-25">
+          <div className="w-full lg:w-[35%] h-full py-10 mt-[-60px] md:mt-[-50px] lg:mt-[-35px] xl:mr-6 2xl:mr-15">
             <div className="flex flex-col max-w-4xl mx-auto gap-4">
               <div className="border border-black border-opacity-10 rounded-xl pt-3 pr-4 pb-0 pl-4">
                 <h3 className="text-xl font-bold">ภาพรวม</h3>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-7 text-neutral-500 font-normal text-lg pt-5 pb-5">
+                <ul className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-3 gap-7 text-neutral-500 font-normal text-lg pt-5 pb-5">
                   <li className="flex items-center gap-1 whitespace-nowrap border border-current px-5 rounded-lg p-1">
                     <IoBedOutline className="text-lg bg-amber-200 w-7 h-7 p-1 rounded-md text-neutral-700" />
                     <div className="ml-5 text-neutral-800 text-base">
@@ -474,7 +482,7 @@ function PropertyListings() {
                 <h2 className="text-xl font-bold mt-5 mb-5">
                   สิ่งอำนวยความสะดวก
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-7 text-slate-700 font-normal text-lg mt-5 mb-10">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 2xl:grid-cols-4 gap-7 text-slate-700 font-normal text-lg mt-5 mb-10">
                   {listing.utilities && listing.utilities.length > 0 ? (
                     listing.utilities.map((utility, index) => (
                       <div key={index} className="utility-item flex">
@@ -508,7 +516,7 @@ function PropertyListings() {
                 <h2 className="text-xl font-bold mt-5 mb-5">
                   สถานที่ใกล้เคียง
                 </h2>
-                <div className="flex flex-wrap justify-between gap-4 text-base">
+                <div className="flex flex-wrap flex-col justify-start gap-4 text-base">
                   {listing.university ||
                   listing.school ||
                   listing.hospital ||

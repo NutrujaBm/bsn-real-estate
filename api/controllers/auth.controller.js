@@ -89,3 +89,30 @@ export const logout = async (req, res, next) => {
     next(error);
   }
 };
+
+export const refreshToken = async (req, res, next) => {
+  const refreshToken = req.cookies.refresh_token; // หรือเก็บใน LocalStorage บนฝั่ง Frontend
+
+  if (!refreshToken)
+    return next(errorHandler(401, "No refresh token provided"));
+
+  try {
+    // ตรวจสอบว่า refresh token ถูกต้องหรือไม่
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    // หา user โดยใช้ ID ที่ได้จาก refresh token
+    const user = await User.findById(decoded.id);
+    if (!user) return next(errorHandler(404, "User not found"));
+
+    // สร้าง Access Token ใหม่
+    const newAccessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    // ส่ง Access Token กลับไปให้ผู้ใช้
+    res.cookie("access_token", newAccessToken, { httpOnly: true });
+    res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    next(error);
+  }
+};

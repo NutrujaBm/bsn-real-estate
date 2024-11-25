@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FaSearch,
@@ -10,6 +10,7 @@ import {
   FaClipboardList,
 } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
+import { RxHamburgerMenu } from "react-icons/rx";
 import {
   logoutUserFailure,
   logoutUserStart,
@@ -43,6 +44,21 @@ function Header() {
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
+  };
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // สถานะของเมนู (เปิด/ปิด)
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen); // เปลี่ยนสถานะเมนู
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false); // ปิดเมนู
+  };
+
+  // ป้องกันการคลิกเมนูแล้วทำให้ปิดเมนู
+  const handleMenuClick = (e) => {
+    e.stopPropagation(); // ป้องกันการคลิกจากภายในเมนูแล้วปิดเมนู
   };
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,22 +96,73 @@ function Header() {
     }
   };
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden"; // ปิดการเลื่อน
+    } else {
+      document.body.style.overflow = "auto"; // เปิดการเลื่อน
+    }
+
+    // คืนค่าเมื่อคอมโพเนนต์ถูก unmount
+    return () => {
+      document.body.style.overflow = "auto"; // เปิดการเลื่อนเมื่อคอมโพเนนต์ unmount
+    };
+  }, [isMenuOpen]);
+
   return (
     <header className="bg-gradient-to-t from-[#F5F7F6] to-[#7fb4f5] shadow-md py-2">
       {/* Rest of the content */}
-      <div className="flex justify-between max-w-7xl mx-auto items-center p-1">
+      <div className="flex justify-between max-w-7xl mx-auto items-center p-1 px-10">
+        {/* ไอคอนแฮมเบอร์เกอร์ */}
+        <div className="lg:hidden mr-20 sm:mr-60" onClick={toggleMenu}>
+          <RxHamburgerMenu size={30} />
+        </div>
+
+        <div
+          className={`${
+            isMenuOpen ? "block" : "hidden"
+          } absolute top-26 left-0 w-full h-screen bg-neutral-900 bg-opacity-70 z-50 lg:hidden`}
+          onClick={closeMenu}
+        >
+          <div
+            className="space-y-4 bg-black p-5 w-full h-[194px]"
+            onClick={handleMenuClick}
+          >
+            <ul className="list-none">
+              {" "}
+              {/* เพิ่ม class list-none ที่นี่ */}
+              <li className="py-3 border-b border-white border-opacity-10">
+                <a href="/" className="text-base font-light text-white">
+                  หน้าหลัก
+                </a>
+              </li>
+              <li className="py-3 border-b border-white border-opacity-10">
+                <a href="/search" className="text-base font-light text-white">
+                  รายการอสังหาริมทรัพย์
+                </a>
+              </li>
+              <li className="py-3 border-b border-white border-opacity-10 pb-5">
+                <a href="/contact" className="text-base font-light text-white">
+                  ติดต่อเรา
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* ส่วนของโลโก้และข้อความ */}
         <Link to="/" onClick={() => handleLinkClick("/")}>
-          <h1 className="font-bold text-lg sm:text-2xl flex items-center space-x-2">
+          <h1 className="font-bold text-lg lg:text-2xl flex items-center space-x-2 lg:justify-start justify-center">
             <img
               src="/logo.png"
               alt="BSN Real Estate Logo"
               className="h-20 sm:h-20"
             />
             <div className="flex flex-col text-left mt-0">
-              <span className="hidden md:inline text-primary-600 text-md sm:text-xl leading-relaxed tracking-wide text-yellow-500 belanosima-regular">
+              <span className="hidden lg:inline text-primary-600 text-md sm:text-xl leading-relaxed tracking-wide text-yellow-500 belanosima-regular">
                 BSN
               </span>
-              <span className="hidden md:inline text-sm sm:text-sm leading-relaxed tracking-wide text-indigo-500 belanosima-regular">
+              <span className="hidden lg:inline text-sm sm:text-sm leading-relaxed tracking-wide text-indigo-500 belanosima-regular">
                 REAL ESTATE
               </span>
             </div>
@@ -140,51 +207,35 @@ function Header() {
           </Link>
         </ul>
 
-        <ul className="flex gap-4 md:gap-8">
-          {/* Form Search
-          <form
-            className="flex items-center p-3 rounded-lg border border-gray-300 focus-within:border-blue-500 bg-white"
-            onSubmit={handleSearch}
-          >
-            <FaSearch className="text-slate-600 mr-2 " />
-            <input
-              type="text"
-              placeholder="ค้นหา..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent focus:outline-none w-24 md:w-48 md:px-2 text-base"
-            />
-          </form> */}
-
-          <Link onClick={toggleDropdown} className="flex items-center">
-            {currentUser ? (
-              <>
-                <img
-                  src={currentUser.avatar}
-                  alt="avatar"
-                  className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
-                />
-                <span className="ml-2 text-gray-700 text-lg">
-                  {currentUser.username}
-                </span>
-                {isDropdownOpen ? (
-                  <FaAngleUp className="ml-2" />
-                ) : (
-                  <FaAngleDown className="ml-2" />
-                )}
-              </>
-            ) : (
-              <li className="py-2 px-3 rounded w-full text-center">
-                <Link to="/login">เข้าสู่ระบบ</Link>
-              </li>
-            )}
-          </Link>
+        <ul className="flex gap-4 md:gap-8 items-center">
+          <div>
+            <Link onClick={toggleDropdown} className="flex items-center">
+              {currentUser ? (
+                <>
+                  <img
+                    src={currentUser.avatar}
+                    alt="avatar"
+                    className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
+                  />
+                  <span className="ml-2 text-gray-700 text-lg hidden sm:inline">
+                    {currentUser.username}
+                  </span>
+                  {isDropdownOpen ? (
+                    <FaAngleUp className="ml-2" />
+                  ) : (
+                    <FaAngleDown className="ml-2" />
+                  )}
+                </>
+              ) : (
+                <li className="py-2 px-3 rounded w-full text-center">
+                  <Link to="/login">เข้าสู่ระบบ</Link>
+                </li>
+              )}
+            </Link>
+          </div>
 
           {isDropdownOpen && currentUser && (
-            <div
-              className="z-50 absolute top-22 right-80 text-base list-none border bg-white divide-y divide-gray-300 rounded-lg shadow-lg"
-              id="user-dropdown"
-            >
+            <div className="absolute top-22 right-0 md:right-5 xl:right-22 2xl:right-80 z-50 text-base list-none bg-white border divide-y divide-gray-300 rounded-lg shadow-lg">
               <div className="px-4 py-3">
                 <span className="py-3 text-sm text-gray-900 dark:text-white">
                   {currentUser.username}
@@ -204,9 +255,9 @@ function Header() {
                     <FaUser className="inline mr-2" />
                     บัญชี
                     {isAccountMenuOpen ? (
-                      <FaAngleUp className="inline ml-35" />
+                      <FaAngleUp className="inline ml-30 sm:ml-35" />
                     ) : (
-                      <FaAngleDown className="inline ml-35" />
+                      <FaAngleDown className="inline ml-30 sm:ml-35" />
                     )}
                   </a>
                   {isAccountMenuOpen && (
@@ -248,9 +299,9 @@ function Header() {
                     <FaClipboardList className="inline mr-2" />
                     โพสต์อสังหาริมทรัพย์
                     {isListMenuOpen ? (
-                      <FaAngleUp className="inline ml-10" />
+                      <FaAngleUp className="inline  ml-5 sm:ml-10" />
                     ) : (
-                      <FaAngleDown className="inline ml-10" />
+                      <FaAngleDown className="inline  ml-5 sm:ml-10" />
                     )}
                   </a>
                   {isListMenuOpen && (

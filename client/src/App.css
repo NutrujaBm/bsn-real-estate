@@ -73,9 +73,8 @@ body {
   justify-content: center; /* จัดแนวปุ่มในแนวนอน */
 }
 
-/* เพิ่มเอฟเฟกต์เมื่อชี้เมาส์ไปที่ปุ่ม */
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-  background-color: rgba(0, 0, 0, 0.5); /* ปรับสีพื้นหลังเมื่อชี้เมาส์ */
-  color: black; /* ปรับสีตัวอักษรเมื่อชี้เมาส์ */
+  background-color: rgba(0, 0, 0, 0.5);
+  color: black;
 }
