@@ -62,7 +62,14 @@ function ShowListings() {
         return;
       }
 
-      setUserListings(data);
+      // เรียงข้อมูลจากวันที่ล่าสุดไปเก่าสุด
+      const sortedListings = data.sort((a, b) => {
+        const dateA = new Date(a.createdAt); // แปลงวันที่เป็น Date object
+        const dateB = new Date(b.createdAt);
+        return dateB - dateA; // เรียงจากวันที่ใหม่ที่สุด
+      });
+
+      setUserListings(sortedListings);
     } catch (error) {
       setShowListingsError(true);
     }

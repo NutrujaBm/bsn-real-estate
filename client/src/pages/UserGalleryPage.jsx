@@ -81,9 +81,17 @@ function UserGalleryPage() {
       try {
         const res = await fetch(`/api/user/gallery/${userId}`);
         const data = await res.json();
+
         if (data.success !== false) {
-          setUserListings(data);
-          setFilteredListings(data); // Set all listings as default
+          // เรียงข้อมูลจากวันที่ล่าสุดไปเก่าสุด
+          const sortedListings = data.sort((a, b) => {
+            const dateA = new Date(a.updatedAt); // ใช้วันที่ที่ได้รับจาก API
+            const dateB = new Date(b.updatedAt);
+            return dateB - dateA; // เรียงจากวันที่ใหม่ที่สุด
+          });
+
+          setUserListings(sortedListings);
+          setFilteredListings(sortedListings); // ตั้งค่าข้อมูลที่ถูกจัดเรียง
         } else {
           setError("ไม่พบข้อมูลรายการของผู้ใช้");
         }
