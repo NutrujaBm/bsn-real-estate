@@ -35,9 +35,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/latLngFinder" element={<LatLngFinder />} />
 
-        {/* Private Routes */}
         <Route element={<PrivateRoute />}>
-          {/* Accessible by both admin and member */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/password" element={<Password />} />
           <Route path="/create-listing" element={<CreateListing />} />
@@ -55,7 +53,6 @@ function App() {
           <Route path="/report-form" element={<UserReportForm />} />
         </Route>
 
-        {/* Admin-only Routes */}
         <Route element={<PrivateRoute role="admin" />}>
           <Route path="/admin/*" element={<SidebarMenu />} />
         </Route>

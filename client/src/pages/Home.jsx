@@ -6,10 +6,8 @@ import SwiperCore from "swiper";
 import "swiper/css/bundle";
 import ListingItem from "../components/ListingItem";
 
-export default function Home() {
+function Home() {
   const [offerListings, setOfferListings] = useState([]);
-  const [saleListings, setSaleListings] = useState([]);
-  const [rentListings, setRentListings] = useState([]);
   SwiperCore.use([Navigation]);
 
   useEffect(() => {
@@ -111,3 +109,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;

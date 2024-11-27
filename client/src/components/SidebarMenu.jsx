@@ -120,7 +120,7 @@ const SidebarMenu = () => {
               ดูประวัติการแจ้งเตือน
             </a>
           </li>
-
+          {/* 
           <li>
             <a
               href="#"
@@ -220,7 +220,7 @@ const SidebarMenu = () => {
                 ออกจากระบบ
               </span>
             </li>
-          </li>
+          </li> */}
         </ul>
       </div>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   FaAngleDown,
   FaAngleUp,
@@ -19,7 +19,7 @@ import {
 function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const { userId } = useParams();
+  // const { userId } = useParams();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
@@ -111,7 +111,7 @@ function Header() {
 
   return (
     <>
-      {currentUser && currentUser.role !== "admin" && (
+      {(!currentUser || currentUser.role !== "admin") && (
         <header className="bg-gradient-to-t from-[#F5F7F6] to-[#7fb4f5] shadow-md py-2">
           {/* Rest of the content */}
           <div className="flex justify-between max-w-7xl mx-auto items-center p-1 px-10">
