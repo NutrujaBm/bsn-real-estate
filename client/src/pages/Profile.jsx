@@ -26,16 +26,17 @@ function Profile() {
 
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    phone: currentUser.phone || "", // Initialize with current user phone
+    avatar: currentUser.avatar || "", // Initialize with current user avatar
+  });
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
+  const [phoneError, setPhoneError] = useState(false);
 
   const dispatch = useDispatch();
-
-  console.log(formData);
-  // console.log(userListings);
 
   useEffect(() => {
     if (file) {
@@ -45,10 +46,8 @@ function Profile() {
 
   const handleFileUpload = (file) => {
     const storage = getStorage(app);
-
     const fileName = new Date().getTime() + file.name;
     const storageRef = ref(storage, fileName);
-
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on(
@@ -59,22 +58,47 @@ function Profile() {
         setFilePerc(Math.round(progress));
       },
       (error) => {
-        setFileUploadError(error);
+        setFileUploadError(true);
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
-          setFormData({ ...formData, avatar: downloadURL })
+          setFormData((prevData) => ({ ...prevData, avatar: downloadURL }))
         );
       }
     );
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    let updatedValue = value;
+
+    // Format the phone number if it's being changed
+    if (id === "phone") {
+      let formattedPhone = value.replace(/\D/g, ""); // Remove non-numeric characters
+      if (formattedPhone.length > 3 && formattedPhone.length <= 6) {
+        formattedPhone = formattedPhone.replace(/(\d{3})(\d{0,3})/, "$1-$2");
+      } else if (formattedPhone.length > 6) {
+        formattedPhone = formattedPhone.replace(
+          /(\d{3})(\d{3})(\d{0,4})/,
+          "$1-$2-$3"
+        );
+      }
+      updatedValue = formattedPhone; // Use the formatted phone number
+
+      // ตรวจสอบว่าเป็นหมายเลขโทรศัพท์ที่มี 10 หลัก
+      setPhoneError(updatedValue.length !== 12); // ฟอร์แมตแล้วรวมขีด "-" จึงจะเป็น 12 ตัว
+    }
+
+    // Update the form data state
+    setFormData((prevData) => ({ ...prevData, [id]: updatedValue }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.phone.length !== 12) {
+      alert("หมายเลขโทรศัพท์ต้องมี 10 หลัก ");
+      return;
+    }
     try {
       dispatch(updateUserStart());
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
@@ -96,63 +120,6 @@ function Profile() {
       setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error.message));
-    }
-  };
-
-  const handleDeleteUser = async () => {
-    try {
-      dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: "DELETE",
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        dispatch(deleteUserFailure(data.message));
-        return;
-      }
-
-      dispatch(deleteUserSuccess(data));
-    } catch (error) {
-      dispatch(deleteUserFailure(error.message));
-    }
-  };
-
-  const handleShowListings = async () => {
-    try {
-      setShowListingsError(false);
-      const res = await fetch(`/api/user/listings/${currentUser._id}`);
-      const data = await res.json();
-
-      if (data.success === false) {
-        setShowListingsError(true);
-        return;
-      }
-
-      setUserListings(data);
-    } catch (error) {
-      setShowListingsError(true);
-    }
-  };
-
-  const handleListingDelete = async (listingId) => {
-    try {
-      const res = await fetch(`/api/listing/delete/${listingId}`, {
-        method: "DELETE",
-      });
-
-      const data = await res.json();
-      if (data.success === false) {
-        console.log(error.message);
-        return;
-      }
-
-      setUserListings((prev) =>
-        prev.filter((listing) => listing._id !== listingId)
-      );
-    } catch (error) {
-      console.log(error.message);
     }
   };
 
@@ -317,10 +284,9 @@ function Profile() {
               <input
                 id="phone"
                 type="text"
-                defaultValue={currentUser.phone}
+                value={formData.phone} // Use formatted phone number as value
                 onChange={handleChange}
                 className="bg-gray-50 border border-e-0 border-gray-300 text-gray-900 text-base rounded-s-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 pl-11"
-                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
               />
             </div>
             <button
@@ -333,6 +299,11 @@ function Profile() {
               <FaCopy className="w-5 h-5" />
             </button>
           </div>
+          {phoneError && (
+            <p className="text-red-500 text-xs mt-2">
+              หมายเลขโทรศัพท์ต้องมี 10 หลัก
+            </p>
+          )}
           <p
             id="helper-text-explanation"
             className="mt-2 text-base text-gray-500 dark:text-gray-400"

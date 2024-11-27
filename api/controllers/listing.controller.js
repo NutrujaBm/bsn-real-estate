@@ -3,8 +3,11 @@ import { errorHandler } from "../utils/error.js";
 
 export const getListings = async (req, res, next) => {
   try {
-    // ดึงข้อมูลทั้งหมดจาก Listing
-    const listings = await Listing.find();
+    // ดึงข้อมูลทั้งหมดจาก Listing พร้อม populate userRef
+    const listings = await Listing.find().populate(
+      "userRef",
+      "username avatar"
+    );
     res.status(200).json(listings);
   } catch (error) {
     next(error); // ถ้ามีข้อผิดพลาดก็ให้ส่งไปยัง error handler

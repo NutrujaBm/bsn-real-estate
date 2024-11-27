@@ -67,27 +67,27 @@ function AdminReportPage() {
       {reports.length === 0 ? (
         <p className="text-center text-gray-500">ไม่มีรายงาน</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div
+          className="overflow-x-auto"
+          style={{ height: "100vh", overflowY: "hidden" }}
+        >
           <table
             className="w-full border-collapse border border-gray-200 text-base"
             style={{ tableLayout: "fixed" }}
           >
             <thead>
-              <tr className="bg-gray-100">
+              <tr className="bg-gray-100 text-center">
                 <th className="border border-gray-200 px-4 py-2">ผู้รายงาน</th>
-                <th className="border border-gray-200 px-4 py-2">
-                  สิ่งที่ถูกรายงาน
-                </th>
+                <th className="border border-gray-200 px-4 py-2">กล่าวถึง</th>
                 <th className="border border-gray-200 px-4 py-2">ประเภท</th>
                 <th className="border border-gray-200 px-4 py-2">ปัญหา</th>
                 <th
                   className="border border-gray-200 px-4 py-2"
                   style={{ width: "300px" }}
                 >
-                  รายละเอียด
+                  เนื้อหาที่ถูกแจ้ง
                 </th>
                 <th className="border border-gray-200 px-4 py-2">สถานะ</th>
-                <th className="border border-gray-200 px-4 py-2">การจัดการ</th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@ function AdminReportPage() {
                       "ไม่ทราบ"
                     )}
                   </td>
-                  <td className="border border-gray-200 px-4 py-2">
+                  <td className="border border-gray-200 px-4 py-2 text-center">
                     {report.entityType === "user"
                       ? "รายงานผู้ใช้"
                       : report.entityType === "listing"
@@ -179,7 +179,7 @@ function AdminReportPage() {
                     {report.description}
                   </td>
 
-                  <td className="border border-gray-200 px-4 py-2">
+                  <td className="border border-gray-200 px-4 py-2 text-center">
                     <select
                       value={report.status || "pending"}
                       onChange={(e) => updateStatus(report._id, e.target.value)}
@@ -189,14 +189,6 @@ function AdminReportPage() {
                       <option value="in-progress">กำลังดำเนินการ</option>
                       <option value="resolved">แก้ไขแล้ว</option>
                     </select>
-                  </td>
-                  <td className="border border-gray-200 px-4 py-2">
-                    <button
-                      onClick={() => deleteReport(report._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      ลบ
-                    </button>
                   </td>
                 </tr>
               ))}

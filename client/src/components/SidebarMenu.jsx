@@ -1,36 +1,62 @@
 import React, { useState } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Link } from "react-router-dom";
 import Dashboard from "../pages/AdminDashboard";
 import UserManagement from "../pages/UserManagement";
 import PropertyManagement from "../pages/PropertyManagement";
 import AdminReportPage from "../pages/AdminReportPage";
 import { useSelector } from "react-redux";
 import AdminReportList from "../pages/AdminReportList";
+import {
+  FaAngleDown,
+  FaAngleUp,
+  FaClipboardList,
+  FaSignOutAlt,
+  FaUser,
+} from "react-icons/fa";
 
 const SidebarMenu = () => {
   const { currentUser } = useSelector((state) => state.user);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const location = useLocation();
 
-  const toggleProfileMenu = () => {
-    setIsProfileMenuOpen(!isProfileMenuOpen);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isListMenuOpen, setIsListMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState("/");
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
-  // Function to extract the current page title from the URL
-  const getPageTitle = () => {
-    switch (location.pathname) {
-      case "/admin/dashboard":
-        return "ภาพรวมของระบบ";
-      case "/admin/users":
-        return "ผู้ใช้งานภายในระบบ";
-      case "/admin/properties":
-        return "จัดการอสังหาริมทรัพย์";
-      case "/admin/report":
-        return "รายงานปัญหา";
-      case "/admin/notification-history":
-        return "ดูประวัติการแจ้งเตือน";
-      default:
-        return "Admin Panel";
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  };
+
+  const toggleAccountMenu = () => {
+    setIsAccountMenuOpen((prev) => !prev);
+  };
+
+  const toggleListMenu = () => {
+    setIsListMenuOpen((prev) => !prev);
+  };
+
+  const handleLinkClick = (link) => {
+    setActiveLink(link);
+  };
+
+  const handleLogout = async () => {
+    try {
+      dispatch(logoutUserStart());
+      const res = await fetch(`/api/auth/logout`);
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(logoutUserFailure(data.message));
+        return;
+      }
+
+      dispatch(logoutUserSuccess(data));
+    } catch (error) {
+      dispatch(logoutUserFailure(error.message));
     }
   };
 
@@ -53,7 +79,7 @@ const SidebarMenu = () => {
             </span>
           </div>
         </h1>
-        <ul className="flex-grow p-3 ">
+        <ul className="flex-grow p-3">
           <li>
             <a
               href="/admin/dashboard"
@@ -94,67 +120,127 @@ const SidebarMenu = () => {
               ดูประวัติการแจ้งเตือน
             </a>
           </li>
-          {/* Profile submenu */}
-          <li>
-            <button
-              className="p-4 w-full text-left hover:bg-gray-700 text-base"
-              onClick={toggleProfileMenu}
-            >
-              Profile
-            </button>
-            {isProfileMenuOpen && (
-              <ul className="pl-6 bg-gray-700">
-                {/* <li>
-            <a
-              href="/admin/profile"
-              className="p-4 block hover:bg-gray-600"
-            >
-              Profile Info
-            </a>
-          </li>
+
           <li>
             <a
-              href="/admin/settings"
-              className="p-4 block hover:bg-gray-600"
+              href="#"
+              className="block px-4 py-4 mt-10 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-y"
+              onClick={toggleAccountMenu}
             >
-              Settings
+              <FaUser className="inline mr-2" />
+              บัญชี
+              {isAccountMenuOpen ? (
+                <FaAngleUp className="inline ml-30 sm:ml-35" />
+              ) : (
+                <FaAngleDown className="inline ml-30 sm:ml-35" />
+              )}
             </a>
-          </li> */}
+            {isAccountMenuOpen && (
+              <ul className="mt-2 bg-gray-100 p-2">
+                <li>
+                  <Link
+                    to="/profile"
+                    onClick={() => {
+                      closeDropdown();
+                      handleLinkClick("/profile");
+                    }}
+                    className="block px-8 py-4 text-gray-700 hover:bg-gray-200 border-b"
+                  >
+                    แก้ไขโปรไฟล์
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/profile/password"
+                    onClick={() => {
+                      closeDropdown();
+                      handleLinkClick("/profile/password");
+                    }}
+                    className="block px-8 py-4 text-gray-700 hover:bg-gray-200"
+                  >
+                    เปลี่ยนรหัสผ่าน
+                  </Link>
+                </li>
               </ul>
             )}
+          </li>
+
+          <li>
+            <a
+              href="#"
+              className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
+              onClick={toggleListMenu}
+            >
+              <FaClipboardList className="inline mr-2" />
+              โพสต์อสังหาริมทรัพย์
+              {isListMenuOpen ? (
+                <FaAngleUp className="inline  ml-5 sm:ml-10" />
+              ) : (
+                <FaAngleDown className="inline  ml-5 sm:ml-10" />
+              )}
+            </a>
+            {isListMenuOpen && (
+              <ul className="mt-2 bg-gray-100 p-2">
+                <li>
+                  <Link
+                    to="/create-listing"
+                    onClick={() => {
+                      closeDropdown();
+                      handleLinkClick("/profile");
+                    }}
+                    className="block px-8 py-4 text-gray-700 hover:bg-gray-200 border-b"
+                  >
+                    สร้างโพสต์อสังหาริมทรัพย์
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/show-listing"
+                    onClick={() => {
+                      closeDropdown();
+                      handleLinkClick("/profile/password");
+                    }}
+                    className="block px-8 py-4 text-gray-700 hover:bg-gray-200"
+                  >
+                    รายการอสังหาริมทรัพย์
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+        </ul>
+        <ul className="flex-grow p-3">
+          <li>
+            <li>
+              <span
+                className="block px-4 py-4 mt-80 text-base text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt className="inline mr-2" />
+                ออกจากระบบ
+              </span>
+            </li>
           </li>
         </ul>
       </div>
 
       {/* Content Area */}
-      <div className="flex-grow p-8 bg-neutral-100">
+      <div className="flex-grow p-3 bg-neutral-100">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6 bg-slate-400">
+        <div className="flex justify-between items-center mb-2 bg-indigo-200">
           {/* Page Title */}
-          <div className="text-3xl font-bold">
-            {getPageTitle()} {/* Dynamically display page title */}
-          </div>
+          <div className="text-3xl font-bold"></div>
 
           {/* Header Right Section */}
           <div className="flex items-center space-x-6 ">
-            {/* Search Bar */}
-            <input
-              type="text"
-              placeholder="Search..."
-              className="p-2 bg-gray-200 rounded-lg"
-            />
-
             {/* Profile and Username */}
             <div className="flex items-center space-x-3">
               <span className="text-xl">
-                Hello,
-                {currentUser.username}
+                ยินดีต้อนรับ ผู้ดูแลระบบ!
+                <p>{currentUser.username}</p>
               </span>{" "}
               {/* Username */}
-              <button
-                className="p-2 bg-gray-700 rounded-full"
-                onClick={toggleProfileMenu}
-              >
+              <button className="p-2 bg-gray-700 rounded-full">
                 <img
                   src={currentUser.avatar}
                   alt="avatar"
