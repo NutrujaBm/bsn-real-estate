@@ -53,7 +53,7 @@ function CreateListing() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { currentUser } = useSelector(state => state.user);
+  const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   console.log(formData);
@@ -63,10 +63,10 @@ function CreateListing() {
   const [districts, setDistricts] = useState([]);
   const [subdistricts, setSubdistricts] = useState([]);
 
-  const handleProvinceChange = event => {
+  const handleProvinceChange = (event) => {
     const provinceName = event.target.value;
     setSelectedProvince(provinceName);
-    const province = provincesData.find(p => p.name === provinceName);
+    const province = provincesData.find((p) => p.name === provinceName);
     setDistricts(province ? province.districts : []);
     setSubdistricts([]);
     setSelectedDistrict("");
@@ -77,10 +77,10 @@ function CreateListing() {
     });
   };
 
-  const handleDistrictChange = event => {
+  const handleDistrictChange = (event) => {
     const districtName = event.target.value;
     setSelectedDistrict(districtName);
-    const district = districts.find(d => d.name === districtName);
+    const district = districts.find((d) => d.name === districtName);
     setSubdistricts(district ? district.subdistricts : []);
     setFormData({
       ...formData,
@@ -89,7 +89,7 @@ function CreateListing() {
     });
   };
 
-  const handleLocationSelect = location => {
+  const handleLocationSelect = (location) => {
     setFormData({
       ...formData,
       latitude: location.lat,
@@ -112,7 +112,7 @@ function CreateListing() {
       }
 
       Promise.all(promises)
-        .then(urls => {
+        .then((urls) => {
           setFormData({
             ...formData,
             imageUrls: formData.imageUrls.concat(urls),
@@ -136,7 +136,7 @@ function CreateListing() {
     }
   }, [files]);
 
-  const storeImage = async file => {
+  const storeImage = async (file) => {
     return new Promise((resolve, reject) => {
       const storage = getStorage(app);
       const fileName = new Date().getTime() + file.name;
@@ -145,16 +145,16 @@ function CreateListing() {
 
       uploadTask.on(
         "state_changed",
-        snapshot => {
+        (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
         },
-        error => {
+        (error) => {
           reject(error);
         },
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             resolve(downloadURL);
           });
         }
@@ -162,20 +162,20 @@ function CreateListing() {
     });
   };
 
-  const handleRemoveImage = index => {
+  const handleRemoveImage = (index) => {
     setFormData({
       ...formData,
       imageUrls: formData.imageUrls.filter((_, i) => i !== index),
     });
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { value, checked, id } = e.target;
 
-    setFormData(prevState => {
+    setFormData((prevState) => {
       const utilities = checked
         ? [...prevState.utilities, value]
-        : prevState.utilities.filter(item => item !== value);
+        : prevState.utilities.filter((item) => item !== value);
 
       return {
         ...prevState,
@@ -185,7 +185,7 @@ function CreateListing() {
     });
   };
 
-  const handlePriceChange = e => {
+  const handlePriceChange = (e) => {
     const rawValue = e.target.value.replace(/,/g, ""); // Remove commas
     const numericValue = parseInt(rawValue, 10) || 0; // Convert to number or default to 0
     setFormData({
@@ -194,11 +194,11 @@ function CreateListing() {
     });
   };
 
-  const formatNumber = number => {
+  const formatNumber = (number) => {
     return number.toLocaleString("en-US"); // Add commas
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (formData.imageUrls.length < 1)
@@ -412,7 +412,7 @@ function CreateListing() {
                   <option value="" disabled>
                     --เลือกจังหวัด--
                   </option>
-                  {provincesData.map(province => (
+                  {provincesData.map((province) => (
                     <option key={province.name} value={province.name}>
                       {province.name}
                     </option>
@@ -439,7 +439,7 @@ function CreateListing() {
                   <option value="" disabled>
                     --เลือกเขต/อำเภอ--
                   </option>
-                  {districts.map(district => (
+                  {districts.map((district) => (
                     <option key={district.name} value={district.name}>
                       {district.name}
                     </option>
@@ -458,7 +458,7 @@ function CreateListing() {
                   className="bg-gray-50 border text-lg rounded-lg w-full p-3.5 dark:bg-gray-700"
                   id="subdistrict"
                   name="subdistrict"
-                  onChange={e =>
+                  onChange={(e) =>
                     setFormData({ ...formData, subdistrict: e.target.value })
                   }
                   value={formData.subdistrict}
@@ -923,7 +923,7 @@ function CreateListing() {
                         type="file"
                         className="sr-only"
                         accept="image/*"
-                        onChange={e => setFiles(Array.from(e.target.files))}
+                        onChange={(e) => setFiles(Array.from(e.target.files))}
                         multiple
                       />
                     </label>

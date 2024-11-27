@@ -285,33 +285,33 @@ function ShowListings() {
         </div>
       </div>
 
-      <h1 className="bg-violet-300 border p-5 text-center text-2xl text-white font-semibold rounded-lg shadow-sm mb-5">
+      <h1 className="bg-violet-500 border p-5 text-center text-2xl text-white font-semibold rounded-lg shadow-sm mb-5">
         {getStatusLabel(statusFilter)}
       </h1>
 
       <div className="relative overflow-y-auto shadow-md sm:rounded-lg">
-        <table className="w-full text-lg text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-lg text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+        <table className="w-full text-lg text-left rtl:text-right text-gray-500 dark:text-gray-400 border">
+          <thead className="text-lg text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400 border">
             <tr>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 border">
                 อสังหาริมทรัพย์
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 border">
                 ประเภทอสังหาริมทรัพย์
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 border">
                 ราคา (บาท)
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 border">
                 สถานะ
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 border">
                 วันที่ประกาศ
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 border">
                 ปรับปรุงล่าสุด
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-6 py-3 border">
                 จัดการ
               </th>
             </tr>
@@ -343,27 +343,27 @@ function ShowListings() {
                       </p>
                     </Link>
                   </th>
-                  <td className="px-6 py-4 text-lg">
+                  <td className="px-6 py-4 text-lg border">
                     {getTypeLabel(listing.type)}
                   </td>
-                  <td className="px-6 py-4 text-lg">
+                  <td className="px-6 py-4 text-lg text-right border">
                     {formatPrice(listing.price)}
                   </td>
 
-                  <td className="px-6 py-4 text-lg">
+                  <td className="px-6 py-4 text-lg border">
                     {getStatusLabel(listing.status)}
                   </td>
-                  <td className="px-6 py-4 text-lg">
+                  <td className="px-6 py-4 text-lg border">
                     {formatDateToThai(listing.createdAt)}
                   </td>
-                  <td className="px-6 py-4 text-lg">
+                  <td className="px-6 py-4 text-lg border">
                     {formatDateToThai(listing.updatedAt)}
                   </td>
-                  <td className="px-6 py-4 text-lg">
+                  <td className="px-6 py-4 text-lg border">
                     {listing.status === "active" && (
                       <>
                         <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
-                          <li className="relative group px-3">
+                          {/* <li className="relative group px-3">
                             <button
                               className="flex items-center justify-center w-10 h-10 bg-orange-500 text-white rounded-full hover:bg-orange-600 dark:bg-orange-700 dark:hover:bg-orange-600"
                               onClick={() =>
@@ -375,7 +375,7 @@ function ShowListings() {
                             <span className="absolute left-1/2 text-center w-22 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               เปลี่ยนสถานะเป็น "ดำเนินการเสร็จสิ้น"
                             </span>
-                          </li>
+                          </li> */}
                           <Link to={`/update-listing/${listing._id}`}>
                             <li className="relative group px-3">
                               <button className="flex items-center justify-center w-10 h-10 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-600">
@@ -404,7 +404,7 @@ function ShowListings() {
                     {listing.status === "closed" && (
                       <>
                         <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
-                          <li className="relative group px-3">
+                          {/* <li className="relative group px-3">
                             <button
                               className="flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-600"
                               onClick={() =>
@@ -416,7 +416,7 @@ function ShowListings() {
                             <span className="absolute left-1/2 text-center w-22 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               ต่ออายุโพสต์
                             </span>
-                          </li>
+                          </li> */}
 
                           <li className="relative group px-3">
                             <button

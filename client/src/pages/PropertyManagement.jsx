@@ -7,6 +7,7 @@ import {
   FaClipboardCheck,
   FaTrashAlt,
 } from "react-icons/fa"; // นำเข้าไอคอน
+import Swal from "sweetalert2";
 
 const PropertyManagement = () => {
   const [listings, setListings] = useState([]);
@@ -136,10 +137,45 @@ const PropertyManagement = () => {
   };
 
   const handleEdit = async (listingId, currentStatus) => {
-    const newStatus = currentStatus === "active" ? "under review" : "active";
+    // สถานะทั้งหมด
+    const allStatuses = ["active", "completed", "closed"];
+
+    // ตรวจสอบสถานะที่เหลือ
+    const availableStatuses = allStatuses.filter(
+      (status) => status !== currentStatus
+    );
+
+    if (availableStatuses.length === 0) {
+      Swal.fire({
+        title: "ไม่สามารถเปลี่ยนสถานะได้",
+        text: "สถานะปัจจุบันคือ 'completed' ไม่สามารถเปลี่ยนแปลงได้",
+        icon: "info",
+        confirmButtonText: "ตกลง",
+      });
+      return;
+    }
+
     try {
+      // ให้ผู้ใช้เลือกสถานะใหม่
+      const { value: newStatus } = await Swal.fire({
+        title: "เปลี่ยนสถานะ",
+        text: `สถานะปัจจุบัน: ${currentStatus}`,
+        input: "select",
+        inputOptions: availableStatuses.reduce(
+          (options, status) => ({ ...options, [status]: status }),
+          {}
+        ),
+        inputPlaceholder: "เลือกสถานะใหม่",
+        showCancelButton: true,
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
+      });
+
+      if (!newStatus) return; // หากผู้ใช้ยกเลิก
+
+      // อัพเดตสถานะในฐานข้อมูล
       const response = await axios.put(
-        `/api/listing/update/${listingId}`,
+        `/api/listing/update/${params.listingId}`,
         { status: newStatus },
         {
           headers: {
@@ -150,14 +186,25 @@ const PropertyManagement = () => {
       );
 
       if (response.status === 200) {
-        alert(`สถานะของประกาศถูกเปลี่ยนเป็น: ${newStatus}`);
-        fetchListings();
+        await Swal.fire({
+          title: "สำเร็จ!",
+          text: `สถานะของประกาศถูกเปลี่ยนเป็น "${newStatus}"`,
+          icon: "success",
+          confirmButtonText: "ตกลง",
+        });
+        fetchListings(); // โหลดข้อมูลใหม่
       } else {
-        alert("ไม่สามารถอัพเดตสถานะได้");
+        throw new Error("ไม่สามารถอัพเดตสถานะได้");
       }
     } catch (error) {
       console.log("Error updating status:", error.message);
-      alert("เกิดข้อผิดพลาดในการอัพเดตสถานะ: " + error.message);
+
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถอัพเดตสถานะได้: " + error.message,
+        icon: "error",
+        confirmButtonText: "ตกลง",
+      });
     }
   };
 
@@ -352,9 +399,7 @@ const PropertyManagement = () => {
                     <div className="group relative">
                       <button
                         className="flex items-center justify-center w-10 h-10 bg-orange-500 text-white rounded-full hover:bg-orange-600 dark:bg-orange-700 dark:hover:bg-orange-600"
-                        onClick={() =>
-                          handleStatusChanges(listing._id, "completed")
-                        }
+                        onClick={() => handleEdit(listing._id, listing.status)}
                       >
                         <FaClipboardCheck />
                       </button>

@@ -87,7 +87,7 @@ function Login() {
           />
         </div>
         <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center h-5">
+          {/* <div className="flex items-center h-5">
             <input
               id="remember"
               type="checkbox"
@@ -104,7 +104,7 @@ function Login() {
           </div>
           <p className="text-blue-600 hover:underline text-base ml-4">
             ลืมรหัสผ่าน?
-          </p>
+          </p> */}
         </div>
 
         <button

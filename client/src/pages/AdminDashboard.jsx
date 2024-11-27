@@ -98,13 +98,13 @@ const AdminDashboard = () => {
       title: {
         display: true,
         font: {
-          size: 20, // ขนาดฟอนต์ของ title
+          size: 18, // ขนาดฟอนต์ของ title
         },
       },
       legend: {
         labels: {
           font: {
-            size: 20, // ขนาดฟอนต์ของ legend
+            size: 18, // ขนาดฟอนต์ของ legend
           },
         },
       },
@@ -113,14 +113,14 @@ const AdminDashboard = () => {
       x: {
         ticks: {
           font: {
-            size: 20, // ขนาดฟอนต์ของ ticks บนแกน X
+            size: 16, // ขนาดฟอนต์ของ ticks บนแกน X
           },
         },
       },
       y: {
         ticks: {
           font: {
-            size: 20, // ขนาดฟอนต์ของ ticks บนแกน Y
+            size: 16, // ขนาดฟอนต์ของ ticks บนแกน Y
           },
         },
       },
@@ -281,7 +281,7 @@ const AdminDashboard = () => {
           <Line data={monthlyUsersData} options={chartOptions} />
         </div>
 
-        <div className="flex-1 space-y-4">
+        <div className="flex-1 space-y-20">
           <h2 className="text-2xl font-semibold text-gray-800">
             เปรียบเทียบโพสต์
           </h2>
