@@ -98,9 +98,6 @@ export default function Search() {
       <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen w-[410px]">
         <form onSubmit={handleSubmit} className="flex flex-col gap-8 ">
           <div className="flex items-center gap-2">
-            <label className="whitespace-nowrap font-semibold">
-              ค้นหาสิ่งที่สนใจ:
-            </label>
             <input
               type="text"
               id="searchTerm"

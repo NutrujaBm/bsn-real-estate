@@ -27,6 +27,7 @@ import { TbStairs } from "react-icons/tb";
 import { MdContactPhone } from "react-icons/md";
 import { HiOutlineBuildingOffice } from "react-icons/hi2";
 import MiniMap from "../components/MiniMap";
+import ReportPost from "../components/ReportPost";
 
 function PropertyListings() {
   SwiperCore.use([Navigation]);
@@ -75,12 +76,6 @@ function PropertyListings() {
   const goBackToFirstStep = () => {
     setStep(1);
     setDescription(""); // Clear description when going back to step 1
-  };
-
-  const handleSubmitReport = () => {
-    alert("รายงานของคุณได้ถูกส่งแล้ว");
-    // You can add functionality to send data to an API here
-    setPopupVisible(false); // Close the popup after submission
   };
 
   useEffect(() => {
@@ -192,180 +187,7 @@ function PropertyListings() {
                     คัดลอกลิงก์
                   </div>
                 )}
-                <button
-                  onClick={handleReportClick}
-                  className="flex items-center border p-2 rounded-3xl text-base bg-gray-200 hover:bg-gray-300"
-                  title="รายงาน"
-                >
-                  <CiFlag1 className="mr-0 sm:mr-3 w-6 h-6" />
-                  <span className="hidden sm:inline">รายงาน</span>
-                </button>
-
-                {isPopupVisible && (
-                  <div className="fixed inset-0 flex justify-center items-center z-20 ">
-                    <div className="bg-white p-6 rounded-lg w-96 ">
-                      {step === 1 && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20 ">
-                          <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative ">
-                            <form>
-                              <div className="mb-4">
-                                <div className="border-y border-black border-opacity-10 py-2">
-                                  <p className="text-base font-medium">
-                                    รายงานโพสต์
-                                  </p>
-                                  <span className="text-base">
-                                    ปัญหาคืออะไร
-                                  </span>
-                                </div>
-
-                                <div className="flex flex-col mt-6">
-                                  <label className="flex items-center text-base mb-3">
-                                    <input
-                                      type="radio"
-                                      name="report-type"
-                                      value="incorrect-info"
-                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
-                                      onChange={() =>
-                                        setSelectedIssue(
-                                          "การให้ข้อมูลที่ไม่ถูกต้อง"
-                                        )
-                                      }
-                                    />
-                                    การให้ข้อมูลที่ไม่ถูกต้อง
-                                  </label>
-                                  <label className="flex items-center text-base mb-3">
-                                    <input
-                                      type="radio"
-                                      name="report-type"
-                                      value="incorrect-info"
-                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
-                                      onChange={() =>
-                                        setSelectedIssue("รูปภาพที่ไม่สอดคล้อง")
-                                      }
-                                    />
-                                    รูปภาพที่ไม่สอดคล้อง
-                                  </label>
-                                  <label className="flex items-center text-base mb-3">
-                                    <input
-                                      type="radio"
-                                      name="report-type"
-                                      value="incorrect-info"
-                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
-                                      onChange={() =>
-                                        setSelectedIssue(
-                                          "เนื้อหาขาดหายไปไม่ครบถ้วน"
-                                        )
-                                      }
-                                    />
-                                    เนื้อหาขาดหายไปไม่ครบถ้วน
-                                  </label>
-                                  <label className="flex items-center text-base mb-3">
-                                    <input
-                                      type="radio"
-                                      name="report-type"
-                                      value="incorrect-info"
-                                      className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
-                                      onChange={() =>
-                                        setSelectedIssue("การโพสต์หลอกลวง")
-                                      }
-                                    />
-                                    การโพสต์หลอกลวง
-                                  </label>
-                                </div>
-                                <div className="absolute bottom-4 right-0 flex justify-between px-4">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      // ตรวจสอบว่าเลือกปัญหาหรือยัง
-                                      if (selectedIssue) {
-                                        goToNextStep(); // ไปยัง Step ถัดไป
-                                      } else {
-                                        alert(
-                                          "กรุณาเลือกปัญหาก่อนที่จะไปยังขั้นตอนถัดไป"
-                                        );
-                                      }
-                                    }}
-                                    className="px-4 py-2 rounded-full text-base text-blue-500 hover:bg-blue-100"
-                                  >
-                                    ถัดไป
-                                  </button>
-                                </div>
-                              </div>
-                            </form>
-                            <button
-                              onClick={handleClosePopup} // เรียกปิด Popup
-                              className="absolute top-10 right-3 text-gray-700"
-                            >
-                              <IoIosClose className="w-10 h-10" />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {step === 2 && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
-                          <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative">
-                            <div className="border-y border-black border-opacity-10 py-2">
-                              <p className="text-base font-medium">
-                                รายงานโพสต์
-                              </p>
-                              <span className="text-base">ปัญหาคืออะไร</span>
-                            </div>
-                            <form>
-                              <div className="mb-3 mt-5">
-                                <span className="text-base">
-                                  ปัญหาที่เลือก : {selectedIssue}
-                                </span>
-                              </div>
-                              <div className="mb-5">
-                                <span className="text-base">
-                                  ชื่อโพสต์ : {listing.title}
-                                </span>
-                              </div>
-
-                              {/* ใส่รายละเอียด */}
-                              <div className="mb-4">
-                                <textarea
-                                  className="w-full h-32 border p-2 mb-4 rounded-sm text-base"
-                                  value={description}
-                                  onChange={(e) =>
-                                    setDescription(e.target.value)
-                                  }
-                                  placeholder="ระบุรายละเอียดเพิ่มเติม"
-                                ></textarea>
-                              </div>
-
-                              <div className="absolute bottom-4 left-0 right-0 flex justify-between px-4">
-                                <button
-                                  type="button"
-                                  onClick={goBackToFirstStep}
-                                  className="px-4 py-2 rounded-full text-base hover:bg-gray-200"
-                                >
-                                  กลับ
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={handleSubmitReport}
-                                  className="px-4 py-2 rounded-full text-base text-blue-500 hover:bg-blue-100"
-                                >
-                                  ส่งรายงาน
-                                </button>
-                              </div>
-
-                              <button
-                                onClick={handleClosePopup}
-                                className="absolute top-10 right-3 text-gray-700"
-                              >
-                                <IoIosClose className="w-10 h-10" />
-                              </button>
-                            </form>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                <ReportPost listing={listing} />
               </div>
             </div>
 
@@ -381,7 +203,7 @@ function PropertyListings() {
                 <span className="text-base ml-3">
                   ประเภทอสังหาริมทรัพย์ :{" "}
                   {listing?.type === "condo"
-                    ? "คอนโดมิเนียม"
+                    ? "คอนโด"
                     : listing?.type === "apartment"
                     ? "อพาร์ทเม้นท์"
                     : listing?.type}

@@ -7,6 +7,8 @@ import { FaLine } from "react-icons/fa6";
 import { CiFlag1 } from "react-icons/ci";
 import { formatDistanceToNowStrict } from "date-fns";
 import { th } from "date-fns/locale";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 function UserGalleryPage() {
   const { userId } = useParams();
@@ -17,10 +19,13 @@ function UserGalleryPage() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("ทั้งหมด");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isPopupVisible, setPopupVisible] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [step, setStep] = useState(1);
   const [selectedIssue, setSelectedIssue] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userData, setUserData] = useState(null); //
 
   // ฟังก์ชันนับคำ
   const countWords = (text) => {
@@ -38,28 +43,37 @@ function UserGalleryPage() {
     });
   };
 
-  const handleReportClick = () => {
-    setPopupVisible(true);
-  };
+  const handleReportClick = () => setIsPopupVisible(true);
+  const handleClosePopup = () => setIsPopupVisible(false);
+  const goToNextStep = () => setStep(2);
+  const goBackToFirstStep = () => setStep(1);
 
-  const handleClosePopup = () => {
-    setPopupVisible(false);
-  };
+  const handleSubmitReport = async () => {
+    try {
+      setIsSubmitting(true);
 
-  const goToNextStep = () => {
-    if (step === 1 && selectedIssue) {
-      setStep(2);
+      const reportData = {
+        reporter: currentUser._id,
+        reportedEntity: userListings[0]?.userRef?._id, // Use userData if it is available
+        entityType: "user",
+        description,
+        issueType: selectedIssue,
+      };
+
+      console.log("ข้อมูลที่ส่งไปยัง API:", reportData);
+
+      const response = await axios.post("/api/report/create", reportData);
+
+      if (response.status === 201) {
+        alert("รายงานถูกส่งแล้ว");
+        setIsPopupVisible(false);
+      }
+    } catch (error) {
+      console.error("Error creating report:", error);
+      alert("เกิดข้อผิดพลาดในการส่งรายงาน");
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const goBackToFirstStep = () => {
-    setStep(1);
-    setDescription("");
-  };
-
-  const handleSubmitReport = () => {
-    alert("รายงานของคุณได้ถูกส่งแล้ว");
-    setPopupVisible(false);
   };
 
   useEffect(() => {
@@ -161,7 +175,7 @@ function UserGalleryPage() {
             selectedCategory === "condo" ? "bg-orange-400" : "bg-gray-400"
           }`}
         >
-          คอนโดมิเนียม
+          คอนโด
         </button>
         <button
           onClick={() => setSelectedCategory("apartment")}
@@ -261,15 +275,16 @@ function UserGalleryPage() {
 
             <button
               onClick={handleReportClick}
-              className="mt-4 flex items-center border p-2 rounded-3xl text-base bg-gray-200 hover:bg-gray-300"
+              className="flex items-center border p-2 rounded-3xl text-base bg-gray-200 hover:bg-gray-300"
+              title="รายงาน"
             >
-              <CiFlag1 className="mr-3 w-6 h-6" />
-              รายงานผู้ใช้
+              <CiFlag1 className="mr-0 sm:mr-3 w-6 h-6" />
+              <span className="hidden sm:inline">รายงาน</span>
             </button>
 
             {isPopupVisible && (
               <div className="fixed inset-0 flex justify-center items-center z-20">
-                <div className="bg-white p-6 rounded-lg w-96 ">
+                <div className="bg-white p-6 rounded-lg w-96">
                   {step === 1 && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
                       <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative">
@@ -286,23 +301,23 @@ function UserGalleryPage() {
                               <label className="flex items-center text-base mb-3">
                                 <input
                                   type="radio"
-                                  name="report-type"
-                                  value="incorrect-info"
+                                  name="issueType"
+                                  value="impersonation"
                                   className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
                                   onChange={() =>
-                                    setSelectedIssue("การแอบอ่างเป็นบุคคลอื่น")
+                                    setSelectedIssue("impersonation")
                                   }
                                 />
-                                การแอบอ่างเป็นบุคคลอื่น
+                                การแอบอ้างเป็นบุคคลอื่น
                               </label>
                               <label className="flex items-center text-base mb-3">
                                 <input
                                   type="radio"
-                                  name="report-type"
-                                  value="incorrect-info"
+                                  name="issueType"
+                                  value="hate-speech"
                                   className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
                                   onChange={() =>
-                                    setSelectedIssue("มีวาจาสร้างความเกลียดชัง")
+                                    setSelectedIssue("hate-speech")
                                   }
                                 />
                                 มีวาจาสร้างความเกลียดชัง
@@ -310,11 +325,11 @@ function UserGalleryPage() {
                               <label className="flex items-center text-base mb-3">
                                 <input
                                   type="radio"
-                                  name="report-type"
-                                  value="incorrect-info"
+                                  name="issueType"
+                                  value="spam-and-fraud"
                                   className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
                                   onChange={() =>
-                                    setSelectedIssue("สแปมและกลโกง")
+                                    setSelectedIssue("spam-and-fraud")
                                   }
                                 />
                                 สแปมและกลโกง
@@ -322,13 +337,11 @@ function UserGalleryPage() {
                               <label className="flex items-center text-base mb-3">
                                 <input
                                   type="radio"
-                                  name="report-type"
-                                  value="incorrect-info"
+                                  name="issueType"
+                                  value="no-matching-issue"
                                   className="mr-3 w-5 h-5 border-2 border-gray-400 rounded-full checked:border-blue-500 relative"
                                   onChange={() =>
-                                    setSelectedIssue(
-                                      "ไม่มีรายการที่ตรงกับปัญหาของฉัน"
-                                    )
+                                    setSelectedIssue("no-matching-issue")
                                   }
                                 />
                                 ไม่มีรายการที่ตรงกับปัญหาของฉัน
@@ -338,9 +351,8 @@ function UserGalleryPage() {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  // ตรวจสอบว่าเลือกปัญหาหรือยัง
                                   if (selectedIssue) {
-                                    goToNextStep(); // ไปยัง Step ถัดไป
+                                    goToNextStep();
                                   } else {
                                     alert(
                                       "กรุณาเลือกปัญหาก่อนที่จะไปยังขั้นตอนถัดไป"
@@ -355,7 +367,7 @@ function UserGalleryPage() {
                           </div>
                         </form>
                         <button
-                          onClick={handleClosePopup} // เรียกปิด Popup
+                          onClick={handleClosePopup}
                           className="absolute top-10 right-3 text-gray-700"
                         >
                           <IoIosClose className="w-10 h-10" />
@@ -363,7 +375,6 @@ function UserGalleryPage() {
                       </div>
                     </div>
                   )}
-
                   {step === 2 && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20">
                       <div className="bg-white p-6 rounded-lg w-[400px] h-[500px] relative">
@@ -379,11 +390,11 @@ function UserGalleryPage() {
                           </div>
                           <div className="mb-5">
                             <span className="text-base">
-                              ชื่อผู้ใช้ : {userListings[0]?.userRef?.username}
+                              ชื่อผู้ใช้ที่ถูกรายงาน :{" "}
+                              {userListings[0]?.userRef?.username}
                             </span>
                           </div>
 
-                          {/* ใส่รายละเอียด */}
                           <div className="mb-4">
                             <textarea
                               className="w-full h-32 border p-2 mb-4 rounded-sm text-base"
@@ -406,8 +417,9 @@ function UserGalleryPage() {
                               type="button"
                               onClick={handleSubmitReport}
                               className="px-4 py-2 rounded-full text-base text-blue-500 hover:bg-blue-100"
+                              disabled={isSubmitting}
                             >
-                              ส่งรายงาน
+                              {isSubmitting ? "กำลังส่ง..." : "ส่งรายงาน"}
                             </button>
                           </div>
 
