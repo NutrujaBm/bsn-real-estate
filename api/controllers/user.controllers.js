@@ -38,7 +38,8 @@ export const updateUser = async (req, res, next) => {
   }
 
   try {
-    if (req.body.password) {
+    if (req.body.password && req.user.role !== "admin") {
+      // ตรวจสอบรหัสผ่านเก่า (ยกเว้น admin)
       const user = await User.findById(req.params.id);
       const isOldPasswordValid = await bcrypt.compare(
         req.body.oldPassword,
@@ -49,6 +50,9 @@ export const updateUser = async (req, res, next) => {
         return next(errorHandler(400, "Old password is incorrect"));
       }
 
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
+    } else if (req.body.password && req.user.role === "admin") {
+      // ถ้าเป็น admin และกำหนด password ใหม่ ให้ hash โดยไม่ตรวจสอบรหัสผ่านเก่า
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
 
@@ -117,15 +121,22 @@ export const getUserListings = async (req, res, next) => {
 
 export const updatePassword = async (req, res, next) => {
   try {
-    // Check if the user is authorized to update their password
+    // Debug Logs
+    console.log("req.user:", req.user);
+    console.log("req.params.id:", req.params.id);
+    console.log("req.body:", req.body);
+
     if (req.user.id !== req.params.id && req.user.role !== "admin") {
       return res
         .status(403)
         .json({ message: "Unauthorized to update password" });
     }
 
-    // Find the user and check if the old password is correct
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const isOldPasswordValid = await bcrypt.compare(
       req.body.oldPassword,
       user.password
@@ -135,7 +146,6 @@ export const updatePassword = async (req, res, next) => {
       return res.status(400).json({ message: "Old password is incorrect" });
     }
 
-    // Hash the new password
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
     user.password = hashedPassword;
     await user.save();
@@ -144,6 +154,7 @@ export const updatePassword = async (req, res, next) => {
       .status(200)
       .json({ success: true, message: "Password updated successfully" });
   } catch (error) {
+    console.error("Update password error:", error); // Debug error
     next(error);
   }
 };

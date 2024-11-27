@@ -379,7 +379,7 @@ function CreateListing() {
                     className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block p-3.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
                     id="address"
                     name="address"
-                    placeholder="พิมพ์ที่อยู่ของอสังหาริมทรัพย์"
+                    placeholder="พิมพ์ที่อยู่ของอสังหาริมทรัพย์ ในส่วน จังหวัด เขต แขวง กรุณาเลือกช่องด้านล่าง"
                     rows={3}
                     onChange={handleChange}
                     value={formData.address}

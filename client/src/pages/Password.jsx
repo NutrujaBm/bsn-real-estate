@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { useSelector } from "react-redux";
 
 function Password() {
   const [formData, setFormData] = useState({
@@ -8,7 +9,8 @@ function Password() {
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,24 +20,31 @@ function Password() {
     e.preventDefault();
     setError(null);
     setSuccess(false);
-    setLoading(true); // Start loading
+    setLoading(true);
 
     if (formData.newPassword !== formData.confirmNewPassword) {
       setError("รหัสผ่านใหม่ไม่ตรงกัน");
-      setLoading(false); // Stop loading
+      setLoading(false);
       return;
     }
 
-    // Optionally, add password strength validation here
-    if (formData.newPassword.length < 8) {
-      setError("รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร");
+    if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(formData.newPassword)) {
+      setError(
+        "รหัสผ่านต้องมีตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก และตัวเลขอย่างน้อย 8 ตัวอักษร"
+      );
+      setLoading(false);
+      return;
+    }
+
+    if (formData.currentPassword === formData.newPassword) {
+      setError("รหัสผ่านใหม่ต้องไม่เหมือนกับรหัสผ่านปัจจุบัน");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch(`/api/user/update-password/${userId}`, {
-        method: "POST",
+      const res = await fetch(`/api/user/update-password/${currentUser._id}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -45,18 +54,19 @@ function Password() {
         }),
       });
 
-      const data = await res.json();
-      if (!data.success) {
+      if (!res.ok) {
+        const data = await res.json();
         setError(data.message || "เกิดข้อผิดพลาด");
-        setLoading(false); // Stop loading
+        setLoading(false);
         return;
       }
 
       setSuccess(true);
-      setLoading(false); // Stop loading
+      setLoading(false);
     } catch (error) {
+      console.error("Fetch error:", error);
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -109,8 +119,7 @@ function Password() {
         {success && (
           <p className="text-green-500 mb-4">เปลี่ยนรหัสผ่านสำเร็จ!</p>
         )}
-        {loading && <p className="text-gray-500 mb-4">กำลังโหลด...</p>}{" "}
-        {/* Loading indicator */}
+        {loading && <p className="text-gray-500 mb-4">กำลังโหลด...</p>}
         <button
           type="submit"
           className="bg-blue-600 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
