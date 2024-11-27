@@ -41,13 +41,13 @@ export default function Home() {
         <h1 className="text-slate-100 font-bold text-3xl lg:text-6xl z-10 text-center leading-relaxed">
           เราจะช่วยคุณค้นหาสถานที่ที่คุณชื่นชอบ <br />
           <span className="text-slate-300 leading-loose text-">
-            ด้วยแหล่งขายบ้านและอสังหาริมทรัพย์ใกล้ตัวคุณ
+            ด้วยแหล่งเช่าคอนโดและอพาร์ทเมนต์ใกล้ตัวคุณ
           </span>
         </h1>
 
         <Link
           to={"/search"}
-          className="text-xs sm:text-sm text-blue-300 font-bold hover:underline z-10 mt-4"
+          className="text-base sm:text-lg text-blue-500 font-bold hover:underline z-10 mt-4 bg-white p-5 rounded-full shadow-lg"
         >
           ดูรายละเอียด เพิ่มเติม
         </Link>
