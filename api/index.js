@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import userRouter from "./routes/user.route.js";
 import authRouter from "./routes/auth.route.js";
 import listRouter from "./routes/listing.route.js";
-import notificationRouter from "./routes/notification.route.js";
 import reportRouter from "./routes/report.route.js";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -35,7 +34,6 @@ app.listen(3000, () => {
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/listing", listRouter);
-app.use("/api/notification", notificationRouter);
 app.use("/api/report", reportRouter);
 
 app.use(express.static(path.join(__dirname, "/client/dist")));
