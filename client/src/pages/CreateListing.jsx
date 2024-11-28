@@ -30,7 +30,7 @@ function CreateListing() {
     longitude: 0,
     bedroom: "0",
     bathroom: "1",
-    size: 0,
+    size: 1,
     roomNumber: "",
     building: "",
     floor: "",
