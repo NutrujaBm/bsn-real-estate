@@ -320,7 +320,7 @@ function CreateListing() {
                   required
                 >
                   <option value="condo">คอนโด</option>
-                  <option value="apartment">อพาร์ทเมนต์</option>
+                  <option value="apartment">อพาร์ทเม้นท์</option>
                 </select>
               </div>
 

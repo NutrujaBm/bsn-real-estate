@@ -127,7 +127,7 @@ export default function Search() {
                 onChange={handleChange}
                 checked={sidebardata.type === "apartment"}
               />
-              <span>อพาร์ตเม้น</span>
+              <span>อพาร์ทเม้นท์</span>
             </div>
           </div>
           <div className="flex gap-2">
