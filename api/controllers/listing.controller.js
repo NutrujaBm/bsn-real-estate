@@ -89,6 +89,8 @@ export const updateListing = async (req, res, next) => {
       return next(errorHandler(404, "ไม่สามารถอัปเดตโพสต์ได้"));
     }
 
+    console.log(req.body);
+
     // ส่งข้อมูลโพสต์ที่อัปเดตกลับไปยังผู้ใช้
     res.status(200).json({
       success: true,
