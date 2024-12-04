@@ -52,13 +52,6 @@ export const updateListing = async (req, res, next) => {
     const listing = await Listing.findById(req.params.id);
     if (!listing) return next(errorHandler(404, "ไม่พบโพสต์"));
 
-    // ตรวจสอบว่าโพสต์หมดอายุหรือยัง
-    if (listing.expiresAt < new Date() && listing.status === "active") {
-      return next(
-        errorHandler(400, "โพสต์นี้หมดอายุแล้วและไม่สามารถอัปเดตได้")
-      );
-    }
-
     // ตรวจสอบสถานะที่อนุญาตให้เปลี่ยน
     const allowedStatuses = ["active", "completed", "closed"];
     if (req.body.status && !allowedStatuses.includes(req.body.status)) {

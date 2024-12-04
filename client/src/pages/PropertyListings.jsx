@@ -79,6 +79,7 @@ function PropertyListings() {
   };
 
   useEffect(() => {
+    console.log(params);
     const fetchListing = async () => {
       try {
         setLoading(true);

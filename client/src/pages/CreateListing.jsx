@@ -7,7 +7,6 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { Link } from "react-router-dom";
 import { IoArrowForward } from "react-icons/io5";
 import { app } from "../firebase.js";
 import { useSelector } from "react-redux";
@@ -17,7 +16,6 @@ import { provincesData } from "../lib/provincesData.js";
 function CreateListing() {
   const [files, setFiles] = useState([]);
   console.log(files);
-  const { currentUser } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     title: "",
     type: "condo",
@@ -52,6 +50,7 @@ function CreateListing() {
 
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -315,8 +314,7 @@ function CreateListing() {
                 htmlFor="desc"
                 className="block text-lg/6 font-medium text-gray-900"
               >
-                รายละเอียด
-                <span className="text-red-500 text-sm"> *</span>
+                รายละเอียด <span className="text-red-500 text-sm"> *</span>
               </label>
               <div className="mt-2">
                 <textarea

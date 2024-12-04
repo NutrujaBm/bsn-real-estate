@@ -293,7 +293,7 @@ function UpdateListing() {
         return;
       }
 
-      navigate(`/listing/${data._id}`);
+      navigate(`/search`);
     } catch (error) {
       setError("เกิดข้อผิดพลาด: " + error.message);
       setLoading(false);
