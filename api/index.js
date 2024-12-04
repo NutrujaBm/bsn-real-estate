@@ -7,7 +7,6 @@ import listRouter from "./routes/listing.route.js";
 import reportRouter from "./routes/report.route.js";
 import cookieParser from "cookie-parser";
 import path from "path";
-import cors from "cors";
 
 dotenv.config();
 
@@ -24,16 +23,8 @@ const __dirname = path.resolve();
 
 const app = express();
 
-// กำหนด CORS สำหรับ production โดยอนุญาตให้เฉพาะโดเมนที่เชื่อถือได้
-const corsOptions = {
-  origin: process.env.CORS_ALLOWED_ORIGIN, // รับค่าโดเมนจาก .env
-  methods: "GET,POST,PUT,DELETE",
-  credentials: true, // ถ้าต้องการให้สามารถส่ง cookies หรือ authorization headers ได้
-};
-
-app.use(cors(corsOptions)); // ใช้ CORS ที่ปรับแต่ง
-
 app.use(express.json());
+
 app.use(cookieParser());
 
 app.listen(3000, () => {
