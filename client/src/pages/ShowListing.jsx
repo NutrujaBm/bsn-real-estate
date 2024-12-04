@@ -89,12 +89,23 @@ function ShowListings() {
 
   const handleStatusChanges = async (listingId, newStatus, action) => {
     try {
+      // ดึง token จาก localStorage หรือจาก Redux store (หรือจากที่ไหนที่คุณเก็บ token)
+      const token = localStorage.getItem("token"); // หรือใช้ Redux: currentUser.token
+
+      // หากไม่มี token ให้แสดงข้อผิดพลาด
+      if (!token) {
+        Swal.fire("Error", "Please login first", "error");
+        return;
+      }
+
+      // ส่ง API พร้อม Authorization header
       const res = await fetch(
         `http://localhost:5173/api/listing/update/${listingId}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ส่ง token ใน header
           },
           body: JSON.stringify({ status: newStatus }),
         }
