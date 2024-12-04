@@ -102,6 +102,19 @@ function PropertyListings() {
     fetchListing();
   }, [params.listingId]);
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "active":
+        return "กำลังปล่อยเช่า";
+      case "completed":
+        return "ดำเนินการเสร็จสิ้น";
+      case "closed":
+        return "หมดอายุ";
+      default:
+        return status;
+    }
+  };
+
   return (
     <main>
       {loading && <p className="text-center my-7 text-2xl">กำลังโหลด...</p>}
@@ -207,6 +220,9 @@ function PropertyListings() {
                     : listing?.type === "apartment"
                     ? "อพาร์ทเม้นท์"
                     : listing?.type}
+                </span>
+                <span className="text-base ml-3">
+                  สถานะของอสังหาริมทรัพย์ : {getStatusLabel(listing.status)}
                 </span>
               </p>
 

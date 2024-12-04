@@ -505,7 +505,7 @@ const PropertyManagement = () => {
                   <td className="border border-gray-200 px-4 py-2 text-center">
                     {listing.status === "active" && (
                       <span className="text-green-700 bg-green-200 px-2 py-1 rounded-full">
-                        กำลังขาย
+                        กำลังปล่อยเช่า
                       </span>
                     )}
                     {listing.status === "completed" && (
