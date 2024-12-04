@@ -31,7 +31,7 @@ import ReportPost from "../components/ReportPost";
 
 function PropertyListings() {
   SwiperCore.use([Navigation]);
-
+  const { listingId } = useParams();
   const params = useParams();
 
   const [listing, setListing] = useState(null);
@@ -53,6 +53,19 @@ function PropertyListings() {
   const truncatedDescription = isLongDescription
     ? descriptionText.split("\n").slice(0, 1).join("\n") + "..."
     : descriptionText;
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "active":
+        return "กำลังปล่อยเช่า";
+      case "completed":
+        return "ดำเนินการเสร็จสิ้น";
+      case "closed":
+        return "หมดอายุ";
+      default:
+        return status;
+    }
+  };
 
   const toggleDescription = () => {
     setShowFullDescription(!showFullDescription);
@@ -83,7 +96,7 @@ function PropertyListings() {
     const fetchListing = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/listing/get/${params.listingId}`);
+        const res = await fetch(`/api/listing/get/${listingId}`);
         const data = await res.json();
         if (data.success === false) {
           setError(true);
@@ -102,19 +115,6 @@ function PropertyListings() {
 
     fetchListing();
   }, [params.listingId]);
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "active":
-        return "กำลังปล่อยเช่า";
-      case "completed":
-        return "ดำเนินการเสร็จสิ้น";
-      case "closed":
-        return "หมดอายุ";
-      default:
-        return status;
-    }
-  };
 
   return (
     <main>

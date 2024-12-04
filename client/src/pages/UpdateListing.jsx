@@ -286,14 +286,14 @@ function UpdateListing() {
         }),
       });
 
-      const data = await res.json();
-      setLoading(false);
-      if (data.success === false) {
-        setError(data.message);
-        return;
-      }
+      // const data = await res.json();
+      // setLoading(false);
+      // if (data.success === false) {
+      //   setError(data.message);
+      //   return;
+      // }
 
-      navigate(`/search`);
+      navigate(`/listing/${params.listingId}`);
     } catch (error) {
       setError("เกิดข้อผิดพลาด: " + error.message);
       setLoading(false);
