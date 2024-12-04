@@ -7,7 +7,7 @@ import AdminReportPage from "../pages/AdminReportPage";
 
 function SidebarMenu() {
   return (
-    <div className="flex h-[88.9vh]">
+    <div className="flex h-full">
       {/* Sidebar */}
       <div className="w-75 bg-white text-black flex flex-col shadow-2xl border border-gray-200 ">
         <ul className="flex-grow p-3">

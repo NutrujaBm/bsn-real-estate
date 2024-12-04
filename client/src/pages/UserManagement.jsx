@@ -60,7 +60,7 @@ const UserManagement = () => {
       <h1 className="text-2xl font-bold text-center mb-6">จัดการผู้ใช้งาน</h1>
       <div
         className="overflow-x-auto"
-        style={{ maxHeight: "80vh", overflowY: "auto" }} // Set max height and enable scrolling
+        style={{ maxHeight: "70vh", overflowY: "auto" }} // Set max height and enable scrolling
       >
         <table
           className="w-full border-collapse border border-gray-200 text-base"
