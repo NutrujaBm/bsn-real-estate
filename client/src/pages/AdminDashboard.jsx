@@ -237,8 +237,8 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-bold text-gray-800">แดชบอร์ดผู้ดูแลระบบ</h1>
+    <div className="p-8 space-y-8 bg-gray-500 h-[88.9vh]">
+      <h1 className="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
 
       {/* Section 1: User and Post Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">

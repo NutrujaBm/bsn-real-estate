@@ -6,6 +6,8 @@ function Contact() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
+    const currentScroll = window.scrollY; // เก็บตำแหน่ง scroll ปัจจุบัน
+
     setResult("กำลังส่ง...");
 
     const formData = new FormData(event.target);
@@ -24,6 +26,8 @@ function Contact() {
           title: "สำเร็จ",
           text: "ข้อความส่งสำเร็จ!",
           icon: "success",
+        }).then(() => {
+          window.scrollTo(0, currentScroll); // เลื่อนกลับไปยังตำแหน่งเดิม
         });
         setResult("");
       } else {
@@ -33,16 +37,17 @@ function Contact() {
     } catch (error) {
       console.error("Error submitting the form:", error);
       setResult("เกิดข้อผิดพลาดในการส่งข้อมูล");
+      window.scrollTo(0, currentScroll); // เลื่อนกลับไปยังตำแหน่งเดิม
     }
   };
 
   return (
     <div
-      className="grid grid-cols-1 lg:grid-cols-2 w-full min-h-screen bg-cover bg-center bg-no-repeat"
+      className="grid grid-cols-1 lg:grid-cols-2 w-full min-h-[88.9vh] bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/bg-home.jpg')" }}
     >
       {/* Google Map */}
-      <div className="p-6 md:p-8 flex justify-center items-center">
+      <div className="flex justify-center items-center lg:mt-25 lg:ml-70">
         <iframe
           title="Map"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387239.7206819935!2d100.50144048239577!3d13.756331020350488!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29ec3e1b0a72b%3A0x70b2c5e7c6bb71af!2sBangkok%2C%20Thailand!5e0!3m2!1sen!2sus!4v1616320726010!5m2!1sen!2sus"
@@ -53,7 +58,7 @@ function Contact() {
       </div>
 
       {/* แบบฟอร์มติดต่อ */}
-      <div className="flex justify-center items-center p-6 md:p-8 mt-[-260px] md:mt-[-10px] lg:mt-[-100px] ">
+      <div className="flex justify-center items-center p-6 md:p-8 mt-[-260px] md:mt-[-10px] lg:mt-1 lg:mr-99">
         <div className="max-w-lg w-full bg-white p-6 rounded-lg shadow-lg">
           <form onSubmit={onSubmit}>
             <h2 className="text-xl md:text-2xl font-semibold text-center">

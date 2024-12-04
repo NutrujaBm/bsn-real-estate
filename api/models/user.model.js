@@ -54,11 +54,6 @@ const userSchema = new mongoose.Schema(
       enum: ["member", "admin"],
       default: "member",
     },
-    // status: {
-    //   type: String,
-    //   enum: ["online", "offline"],
-    //   default: "offline",
-    // },
   },
   {
     timestamps: true,

@@ -156,14 +156,6 @@ const listingSchema = new mongoose.Schema(
       required: false,
       trim: true,
     },
-    likes: {
-      type: Number,
-      default: 0,
-      validate: {
-        validator: Number.isInteger,
-        message: "{VALUE} is not an integer value",
-      },
-    },
     userRef: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

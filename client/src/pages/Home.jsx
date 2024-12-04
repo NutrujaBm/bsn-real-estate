@@ -13,7 +13,7 @@ function Home() {
   useEffect(() => {
     const fetchOfferListings = async () => {
       try {
-        const res = await fetch("/api/listing/get?offer=true&limit=4");
+        const res = await fetch("/api/listing/get?offer=true&limit=8");
         const data = await res.json();
         setOfferListings(data);
       } catch (error) {
@@ -98,7 +98,7 @@ function Home() {
               </Link>
             </div>
             {/* ใช้ grid สำหรับการจัดตำแหน่งโพสต์ */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-45 gap-y-5">
               {offerListings.map((listing) => (
                 <ListingItem listing={listing} key={listing._id} />
               ))}

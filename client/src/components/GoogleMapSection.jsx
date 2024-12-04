@@ -6,25 +6,32 @@ const containerStyle = {
   height: "400px",
 };
 
-const center = {
-  lat: 13.7563, // พิกัดเริ่มต้น (กรุงเทพฯ)
-  lng: 100.5018,
-};
-
-function GoogleMapSection({ onLocationSelect }) {
+function GoogleMapSection({
+  latitude = 13.7563,
+  longitude = 100.5018,
+  onLocationSelect,
+}) {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
 
+  const center = {
+    lat: latitude,
+    lng: longitude,
+  };
+
   const [map, setMap] = useState(null);
   const [selectedPosition, setSelectedPosition] = useState(center);
 
-  const onLoad = useCallback((map) => {
-    const bounds = new window.google.maps.LatLngBounds(center);
-    map.fitBounds(bounds);
-    setMap(map);
-  }, []);
+  const onLoad = useCallback(
+    (map) => {
+      const bounds = new window.google.maps.LatLngBounds(center);
+      map.fitBounds(bounds);
+      setMap(map);
+    },
+    [center]
+  );
 
   const onUnmount = useCallback(() => {
     setMap(null);

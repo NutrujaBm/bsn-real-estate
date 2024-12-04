@@ -47,49 +47,61 @@ export const createListing = async (req, res, next) => {
 };
 
 export const updateListing = async (req, res, next) => {
-  const listing = await Listing.findById(req.params.id);
-  if (!listing) return next(errorHandler(404, "ไม่พบโพสต์"));
-
-  // ตรวจสอบว่าโพสต์หมดอายุหรือยัง
-  if (listing.expiresAt < new Date() && listing.status === "active") {
-    return next(errorHandler(400, "โพสต์นี้หมดอายุแล้วและไม่สามารถอัปเดตได้"));
-  }
-
-  // ตรวจสอบสถานะที่อนุญาตให้เปลี่ยน
-  const allowedStatuses = ["active", "completed", "closed"];
-  if (req.body.status && !allowedStatuses.includes(req.body.status)) {
-    return next(errorHandler(400, "สถานะไม่ถูกต้อง"));
-  }
-
-  // ตรวจสอบสถานะและอัปเดตวันหมดอายุ
-  if (req.body.status === "active") {
-    // ถ้าสถานะเป็น active ให้คงวันหมดอายุเดิมไว้
-    req.body.expiresAt = listing.expiresAt;
-  } else if (req.body.status === "closed") {
-    // ถ้าสถานะเป็น closed ให้ต่ออายุโพสต์ใหม่
-    const newCreatedDate = new Date(); // วันที่กดต่ออายุ
-    const newExpirationDate = new Date(newCreatedDate);
-    newExpirationDate.setDate(newExpirationDate.getDate() + 14); // เพิ่มวันหมดอายุอีก 14 วัน
-
-    req.body.createdAt = newCreatedDate;
-    req.body.expiresAt = newExpirationDate;
-  }
-
-  // ตรวจสอบว่าเป็นผู้ใช้งานคนเดียวกันหรือไม่
-  if (req.user.id.toString() !== listing.userRef.toString()) {
-    return next(
-      errorHandler(403, "คุณสามารถอัปเดตเฉพาะโพสต์ของคุณเองเท่านั้น")
-    );
-  }
-
   try {
-    // อัปเดตข้อมูลโพสต์
+    // ค้นหาโพสต์ในฐานข้อมูล
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) return next(errorHandler(404, "ไม่พบโพสต์"));
+
+    // ตรวจสอบว่าโพสต์หมดอายุหรือยัง
+    if (listing.expiresAt < new Date() && listing.status === "active") {
+      return next(
+        errorHandler(400, "โพสต์นี้หมดอายุแล้วและไม่สามารถอัปเดตได้")
+      );
+    }
+
+    // ตรวจสอบสถานะที่อนุญาตให้เปลี่ยน
+    const allowedStatuses = ["active", "completed", "closed"];
+    if (req.body.status && !allowedStatuses.includes(req.body.status)) {
+      return next(errorHandler(400, "สถานะไม่ถูกต้อง"));
+    }
+
+    // อัปเดตสถานะและจัดการวันหมดอายุ
+    if (req.body.status === "active") {
+      // ถ้าสถานะเป็น active ให้คงวันหมดอายุเดิมไว้
+      req.body.expiresAt = listing.expiresAt;
+    } else if (req.body.status === "closed") {
+      // ถ้าสถานะเป็น closed ให้ต่ออายุโพสต์ใหม่
+      const newCreatedDate = new Date(); // วันที่กดต่ออายุ
+      const newExpirationDate = new Date(newCreatedDate);
+      newExpirationDate.setDate(newExpirationDate.getDate() + 14); // เพิ่มวันหมดอายุอีก 14 วัน
+
+      req.body.createdAt = newCreatedDate;
+      req.body.expiresAt = newExpirationDate;
+    }
+
+    // เพิ่มการอัปเดตสถานะอย่างง่ายจากโค้ดใหม่
+    if (req.body.status) {
+      listing.status = req.body.status;
+    }
+
+    // อัปเดตข้อมูลในฐานข้อมูล
     const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
-    res.status(200).json(updatedListing);
+
+    // ตรวจสอบผลลัพธ์
+    if (!updatedListing) {
+      return next(errorHandler(404, "ไม่สามารถอัปเดตโพสต์ได้"));
+    }
+
+    // ส่งข้อมูลโพสต์ที่อัปเดตกลับไปยังผู้ใช้
+    res.status(200).json({
+      success: true,
+      message: "อัปเดตโพสต์สำเร็จ",
+      data: updatedListing,
+    });
   } catch (error) {
     next(error);
   }
@@ -118,6 +130,7 @@ export const getListing = async (req, res, next) => {
       maxPrice,
       limit,
       startIndex,
+      status,
     } = req.query;
 
     // Default values for pagination
@@ -125,7 +138,7 @@ export const getListing = async (req, res, next) => {
     const skipItems = parseInt(startIndex) || 0;
 
     // Build the query object
-    const query = {};
+    const query = { status: status || "active" };
 
     // Add search functionality for title
     if (searchTerm) {

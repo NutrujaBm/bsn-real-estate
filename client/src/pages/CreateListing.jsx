@@ -17,6 +17,7 @@ import { provincesData } from "../lib/provincesData.js";
 function CreateListing() {
   const [files, setFiles] = useState([]);
   console.log(files);
+  const { currentUser } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     title: "",
     type: "condo",
@@ -44,7 +45,7 @@ function CreateListing() {
     imageUrls: [],
     expiryAt: "",
     status: "active",
-    phone: "",
+    phone: currentUser.phone || "",
     lineId: "",
     likes: 0,
   });
@@ -53,7 +54,6 @@ function CreateListing() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   console.log(formData);
@@ -62,6 +62,8 @@ function CreateListing() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [districts, setDistricts] = useState([]);
   const [subdistricts, setSubdistricts] = useState([]);
+
+  const [phoneError, setPhoneError] = useState(false);
 
   const handleProvinceChange = (event) => {
     const provinceName = event.target.value;
@@ -170,19 +172,44 @@ function CreateListing() {
   };
 
   const handleChange = (e) => {
-    const { value, checked, id } = e.target;
+    const { id, name, value, checked } = e.target;
+    let updatedValue = value;
 
-    setFormData((prevState) => {
-      const utilities = checked
-        ? [...prevState.utilities, value]
-        : prevState.utilities.filter((item) => item !== value);
+    // Handle 'utilities' checkbox changes
+    if (name === "utilities") {
+      setFormData((prevState) => {
+        const utilities = checked
+          ? [...prevState.utilities, value]
+          : prevState.utilities.filter((item) => item !== value);
 
-      return {
-        ...prevState,
-        [id]: value,
-        utilities,
-      };
-    });
+        return {
+          ...prevState,
+          [name]: value,
+          utilities,
+        };
+      });
+      return; // Exit the function since we've already updated formData for utilities
+    }
+
+    // Handle 'phone' input changes with formatting
+    if (id === "phone") {
+      let formattedPhone = value.replace(/\D/g, ""); // Remove non-numeric characters
+      if (formattedPhone.length > 3 && formattedPhone.length <= 6) {
+        formattedPhone = formattedPhone.replace(/(\d{3})(\d{0,3})/, "$1-$2");
+      } else if (formattedPhone.length > 6) {
+        formattedPhone = formattedPhone.replace(
+          /(\d{3})(\d{3})(\d{0,4})/,
+          "$1-$2-$3"
+        );
+      }
+      updatedValue = formattedPhone;
+
+      // Validate phone number length
+      setPhoneError(updatedValue.length !== 12); // Includes dashes "-"
+    }
+
+    // Update form data for all other inputs
+    setFormData((prevData) => ({ ...prevData, [id]: updatedValue }));
   };
 
   const handlePriceChange = (e) => {
@@ -203,6 +230,11 @@ function CreateListing() {
     try {
       if (formData.imageUrls.length < 1)
         return setError("คุณต้องอัปโหลดรูปภาพอย่างน้อย 1 รูป");
+
+      if (formData.phone.length !== 12) {
+        alert("หมายเลขโทรศัพท์ต้องมี 10 หลัก ");
+        return;
+      }
 
       const expiryAt = new Date();
       expiryAt.setDate(expiryAt.getDate() + 14); // Set expiry to 14 days from now
@@ -340,6 +372,8 @@ function CreateListing() {
                     name="price"
                     type="text" // Change type to text to allow formatted display
                     placeholder="ราคา"
+                    min="0"
+                    max="10000000"
                     onChange={handlePriceChange}
                     value={formData.price ? formatNumber(formData.price) : ""} // Format for display
                     required
@@ -484,7 +518,15 @@ function CreateListing() {
                   แผนที่
                 </label>
                 <div className="mt-2">
-                  <GoogleMapSection onLocationSelect={handleLocationSelect} />
+                  <div className="mt-2">
+                    <GoogleMapSection
+                      onLocationSelect={handleLocationSelect}
+                      initialPosition={{
+                        lat: formData.latitude, // Default: Bangkok
+                        lng: formData.longitude,
+                      }}
+                    />
+                  </div>
                 </div>
                 <span>
                   <a
@@ -495,7 +537,6 @@ function CreateListing() {
                   >
                     วิธีค้นหาละติจูดและลองจิจูด
                     <IoArrowForward size={20} className="ml-2" />{" "}
-                    {/* ใช้ไอคอนตรงนี้ */}
                   </a>
                 </span>
               </div>
@@ -693,13 +734,13 @@ function CreateListing() {
                     type="checkbox"
                     id="wifi"
                     name="utilities"
-                    value="สัญญาณไวไฟ"
-                    checked={formData.utilities.includes("สัญญาณไวไฟ")}
+                    value="Wi-Fi"
+                    checked={formData.utilities.includes("Wi-Fi")}
                     onChange={handleChange}
                     className="mr-2"
                   />
                   <label htmlFor="wifi" className="text-gray-700">
-                    สัญญาณไวไฟ
+                    Wi-Fi
                   </label>
                 </div>
                 <div>
@@ -866,7 +907,7 @@ function CreateListing() {
                   htmlFor="bus"
                   className="block text-lg font-medium text-gray-900"
                 >
-                  สายรถเมย์ประจำทาง
+                  สายรถเมล์ประจำทาง
                 </label>
                 <input
                   id="bus"
@@ -981,14 +1022,20 @@ function CreateListing() {
               <input
                 className="bg-gray-50 border rounded-lg border-gray-300 text-gray-900 text-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3.5"
                 id="phone"
-                name="phone"
                 type="text"
-                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                value={formData.phone}
                 onChange={handleChange}
-                defaultValue={currentUser.phone}
                 required
               />
-              <p className="mt-3 mb-5 text-base/6 text-gray-600">
+              {phoneError && (
+                <p className="text-red-500 text-xs mt-2">
+                  หมายเลขโทรศัพท์ต้องมี 10 หลัก
+                </p>
+              )}
+              <p
+                id="helper-text-explanation"
+                className="mt-2 text-base text-gray-500 dark:text-gray-400"
+              >
                 กรุณาตรวจสอบให้แน่ใจว่าหมายเลขโทรศัพท์หลักของคุณสามารถเปิดเผยต่อสาธารณะได้
               </p>
             </div>

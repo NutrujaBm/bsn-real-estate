@@ -83,14 +83,19 @@ function UserGalleryPage() {
         const data = await res.json();
 
         if (data.success !== false) {
+          // กรองโพสต์ที่มี status เป็น 'active'
+          const activeListings = data.filter(
+            (listing) => listing.status === "active"
+          );
+
           // เรียงข้อมูลจากวันที่ล่าสุดไปเก่าสุด
-          const sortedListings = data.sort((a, b) => {
-            const dateA = new Date(a.updatedAt); // ใช้วันที่ที่ได้รับจาก API
+          const sortedListings = activeListings.sort((a, b) => {
+            const dateA = new Date(a.updatedAt);
             const dateB = new Date(b.updatedAt);
-            return dateB - dateA; // เรียงจากวันที่ใหม่ที่สุด
+            return dateB - dateA;
           });
 
-          setUserListings(sortedListings);
+          setUserListings(sortedListings); // ตั้งค่าผลลัพธ์ที่กรองและจัดเรียงแล้ว
           setFilteredListings(sortedListings); // ตั้งค่าข้อมูลที่ถูกจัดเรียง
         } else {
           setError("ไม่พบข้อมูลรายการของผู้ใช้");
@@ -127,10 +132,10 @@ function UserGalleryPage() {
   return (
     <div className="p-4 px-5 xl:px-73">
       <div className="bg-[url('/banner1.jpg')] bg-cover bg-center h-25 sm:h-35 lg:h-45 rounded-xl flex flex-col justify-center items-center shadow-lg">
-        <h3 className="text-lg sm:text-2xl font-semibold text-white px-2 mb-2">
+        <h3 className="text-lg sm:text-2xl font-bold text-cyan-800 px-2 mb-2 text-shadow-md">
           แกลลอรี่ส่วนตัว
         </h3>
-        <h2 className="text-xl sm:text-4xl font-bold text-white">
+        <h2 className="text-xl sm:text-4xl font-bold text-cyan-900">
           {userListings[0]?.userRef?.username
             ? `อสังหาริมทรัพย์ของ ${userListings[0]?.userRef?.username}`
             : "อสังหาริมทรัพย์"}

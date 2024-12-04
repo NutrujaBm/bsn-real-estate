@@ -1,23 +1,11 @@
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { FaEdit, FaTrashAlt, FaSync, FaClipboardCheck } from "react-icons/fa";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
 import { app } from "../firebase";
-import {
-  updateUserStart,
-  updateUserSuccess,
-  updateUserFailure,
-  deleteUserSuccess,
-  deleteUserStart,
-  deleteUserFailure,
-} from "../redux/user/userSlice.js";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 function ShowListings() {
   const fileRef = useRef(null);
@@ -33,6 +21,7 @@ function ShowListings() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("active");
+  const [status, setStatus] = useState("active");
 
   useEffect(() => {
     if (currentUser) {
@@ -40,70 +29,143 @@ function ShowListings() {
     }
   }, [currentUser]);
 
-  const handleActionChange = async (action) => {
-    try {
-      setStatusFilter(action);
-      handleShowListings(action);
-    } catch (error) {
-      console.log("Error performing action", error);
-    }
-  };
-
   const handleShowListings = async (status = statusFilter) => {
     try {
-      setShowListingsError(false);
       const res = await fetch(
         `/api/user/listings/${currentUser._id}?status=${status}`
       );
       const data = await res.json();
 
       if (data.success === false) {
-        setShowListingsError(true);
         return;
       }
 
-      // เรียงข้อมูลจากวันที่ล่าสุดไปเก่าสุด
       const sortedListings = data.sort((a, b) => {
-        const dateA = new Date(a.createdAt); // แปลงวันที่เป็น Date object
+        const dateA = new Date(a.createdAt);
         const dateB = new Date(b.createdAt);
-        return dateB - dateA; // เรียงจากวันที่ใหม่ที่สุด
+        return dateB - dateA;
       });
 
       setUserListings(sortedListings);
     } catch (error) {
-      setShowListingsError(true);
+      console.log("Error fetching listings:", error);
     }
   };
 
-  const handleStatusChanges = async (listingId, newStatus) => {
-    try {
-      const res = await fetch(`/api/listing/update/${listingId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-        }),
-      });
+  const handleStatusConfirmation = (listingId) => {
+    Swal.fire({
+      title: "คุณแน่ใจหรือไม่?",
+      text: "คุณต้องการเปลี่ยนสถานะจาก 'กำลังปล่อยเช่า' เป็น 'ดำเนินการเสร็จสิ้น' ใช่หรือไม่?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "ใช่, เปลี่ยนสถานะ",
+      cancelButtonText: "ยกเลิก",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleStatusChanges(listingId, "completed", "complete"); // ส่ง action เป็น "complete"
+      }
+    });
+  };
 
-      const updatedListing = await res.json();
-      if (updatedListing.success === false) {
+  const handleRenewPost = (listingId) => {
+    Swal.fire({
+      title: "คุณแน่ใจหรือไม่?",
+      text: "คุณต้องการต่ออายุโพสต์นี้หรือไม่?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "ใช่, ต่ออายุโพสต์",
+      cancelButtonText: "ยกเลิก",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // หากผู้ใช้กดยืนยัน ต่ออายุโพสต์
+        handleStatusChanges(listingId, "active", "renew"); // ส่ง action เป็น "renew"
+      }
+    });
+  };
+
+  const handleStatusChanges = async (listingId, newStatus, action) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5173/api/listing/update/${listingId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      const data = await res.json();
+      if (!data.success) {
         console.log("Error updating status");
         return;
       }
 
+      // อัปเดต State ของ userListings
       setUserListings((prevListings) =>
         prevListings.map((listing) =>
-          listing._id === listingId ? updatedListing : listing
+          listing._id === listingId
+            ? { ...listing, status: newStatus }
+            : listing
         )
       );
+
+      // แสดงข้อความแจ้งเตือนตามปุ่มที่กด
+      if (action === "renew") {
+        Swal.fire(
+          "ต่ออายุโพสต์แล้ว!",
+          "โพสต์นี้ได้รับการต่ออายุสำเร็จ <br />กรุณารีเฟรช 1 ครั้ง",
+          "success"
+        );
+      } else if (action === "complete") {
+        Swal.fire(
+          "เปลี่ยนสถานะแล้ว!",
+          "สถานะถูกเปลี่ยนเป็น 'ดำเนินการเสร็จสิ้น' สำเร็จ <br />กรุณารีเฟรช 1 ครั้ง",
+          "success"
+        );
+      }
     } catch (error) {
       console.log("Error updating status", error);
     }
   };
 
   const handleListingDelete = async (listingId) => {
+    Swal.fire({
+      title: "คุณแน่ใจหรือไม่?",
+      text: "คุณต้องการลบโพสต์นี้หรือไม่?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "ใช่, ลบโพสต์",
+      cancelButtonText: "ยกเลิก",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "ลบโพสต์จริงๆ หรือไม่?",
+          text: "การลบโพสต์จะไม่สามารถย้อนกลับได้!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "ใช่, ลบโพสต์",
+          cancelButtonText: "ยกเลิก",
+        }).then((finalResult) => {
+          if (finalResult.isConfirmed) {
+            // เรียกฟังก์ชันลบโพสต์
+            deleteListing(listingId);
+          }
+        });
+      }
+    });
+  };
+
+  const deleteListing = async (listingId) => {
     try {
       const res = await fetch(`/api/listing/delete/${listingId}`, {
         method: "DELETE",
@@ -118,8 +180,10 @@ function ShowListings() {
       setUserListings((prev) =>
         prev.filter((listing) => listing._id !== listingId)
       );
+      Swal.fire("ลบโพสต์แล้ว!", "โพสต์ถูกลบสำเร็จ", "success");
     } catch (error) {
       console.log("Error:", error.message);
+      Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถลบโพสต์ได้", "error");
     }
   };
 
@@ -141,36 +205,22 @@ function ShowListings() {
   const getStatusLabel = (status) => {
     switch (status) {
       case "active":
-        return "กำลังขาย";
-      case "closed":
-        return "หมดอายุ";
+        return "กำลังปล่อยเช่า";
       case "completed":
         return "ดำเนินการเสร็จสิ้น";
+      case "closed":
+        return "หมดอายุ";
       default:
         return status;
     }
   };
 
   const formatDateToThai = (dateString) => {
-    const months = [
-      "ม.ค.",
-      "ก.พ.",
-      "มี.ค.",
-      "เม.ย.",
-      "พ.ค.",
-      "มิ.ย.",
-      "ก.ค.",
-      "ส.ค.",
-      "ก.ย.",
-      "ต.ค.",
-      "พ.ย.",
-      "ธ.ค.",
-    ];
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    const year = date.getFullYear() + 543;
-    return `${day} ${month} ${year}`;
+    return new Date(dateString).toLocaleDateString("th-TH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   const formatPrice = (price) => {
@@ -234,15 +284,7 @@ function ShowListings() {
                   onClick={() => handleStatusChange("active")}
                   className="block py-2 px-4 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                 >
-                  กำลังขาย
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleStatusChange("closed")}
-                  className="block py-2 px-4 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  หมดอายุ
+                  กำลังปล่อยเช่า
                 </button>
               </li>
               <li>
@@ -251,6 +293,14 @@ function ShowListings() {
                   className="block py-2 px-4 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                 >
                   ดำเนินการเสร็จสิ้น
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleStatusChange("closed")}
+                  className="block py-2 px-4 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                >
+                  หมดอายุ
                 </button>
               </li>
             </ul>
@@ -370,19 +420,20 @@ function ShowListings() {
                     {listing.status === "active" && (
                       <>
                         <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
-                          {/* <li className="relative group px-3">
+                          <li className="relative group px-3">
                             <button
                               className="flex items-center justify-center w-10 h-10 bg-orange-500 text-white rounded-full hover:bg-orange-600 dark:bg-orange-700 dark:hover:bg-orange-600"
                               onClick={() =>
-                                handleStatusChanges(listing._id, "completed")
+                                handleStatusConfirmation(listing._id)
                               }
                             >
                               <FaClipboardCheck />
                             </button>
-                            <span className="absolute left-1/2 text-center w-22 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <span className="absolute left-1/2 text-center w-40 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               เปลี่ยนสถานะเป็น "ดำเนินการเสร็จสิ้น"
                             </span>
-                          </li> */}
+                          </li>
+
                           <Link to={`/update-listing/${listing._id}`}>
                             <li className="relative group px-3">
                               <button className="flex items-center justify-center w-10 h-10 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-600">
@@ -411,11 +462,11 @@ function ShowListings() {
                     {listing.status === "closed" && (
                       <>
                         <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
-                          {/* <li className="relative group px-3">
+                          <li className="relative group px-3">
                             <button
                               className="flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-600"
                               onClick={() =>
-                                handleStatusChanges(listing._id, "active")
+                                handleRenewPost(listing._id, "active")
                               }
                             >
                               <FaSync />
@@ -423,7 +474,7 @@ function ShowListings() {
                             <span className="absolute left-1/2 text-center w-22 transform -translate-x-1/2 bottom-12 text-base text-white bg-gray-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               ต่ออายุโพสต์
                             </span>
-                          </li> */}
+                          </li>
 
                           <li className="relative group px-3">
                             <button
