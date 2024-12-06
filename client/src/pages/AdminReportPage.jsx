@@ -63,7 +63,7 @@ function AdminReportPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">การจัดการรายงาน</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">รายงานปัญหา</h1>
       {reports.length === 0 ? (
         <p className="text-center text-gray-500">ไม่มีรายงาน</p>
       ) : (

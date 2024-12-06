@@ -16,7 +16,7 @@ function SidebarMenu() {
               href="/admin/dashboard"
               className="p-4 block hover:bg-gray-200 text-base"
             >
-              ภาพรวมของระบบ
+              Admin Dashboard
             </a>
           </li>
           <li>
@@ -24,7 +24,7 @@ function SidebarMenu() {
               href="/admin/users"
               className="p-4 block hover:bg-gray-200 text-base"
             >
-              ผู้ใช้งานภายในระบบ
+              จัดการผู้ใช้งานภายในระบบ
             </a>
           </li>
           <li>
@@ -32,7 +32,7 @@ function SidebarMenu() {
               href="/admin/properties"
               className="p-4 block hover:bg-gray-200 text-base"
             >
-              จัดการอสังหาริมทรัพย์
+              จัดการอสังหาริมทรัพย์ภายในระบบ
             </a>
           </li>
           <li>

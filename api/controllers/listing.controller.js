@@ -58,23 +58,15 @@ export const updateListing = async (req, res, next) => {
       return next(errorHandler(400, "สถานะไม่ถูกต้อง"));
     }
 
-    // อัปเดตสถานะและจัดการวันหมดอายุ
-    if (req.body.status === "active") {
-      // ถ้าสถานะเป็น active ให้คงวันหมดอายุเดิมไว้
-      req.body.expiryAt = listing.expiryAt;
-    } else if (req.body.status === "closed") {
-      // ถ้าสถานะเป็น closed ให้ต่ออายุโพสต์ใหม่
-      const newCreatedDate = new Date(); // วันที่กดต่ออายุ
+    // จัดการวันที่รีโพสต์และวันหมดอายุ
+    if (req.body.status === "active" && listing.status === "closed") {
+      const newCreatedDate = new Date(); // วันที่รีโพสต์ใหม่
       const newExpirationDate = new Date(newCreatedDate);
       newExpirationDate.setDate(newExpirationDate.getDate() + 14); // เพิ่มวันหมดอายุอีก 14 วัน
 
+      // อัปเดตวันที่รีโพสต์และวันหมดอายุ
       req.body.createdAt = newCreatedDate;
       req.body.expiryAt = newExpirationDate;
-    }
-
-    // เพิ่มการอัปเดตสถานะอย่างง่ายจากโค้ดใหม่
-    if (req.body.status) {
-      listing.status = req.body.status;
     }
 
     // อัปเดตข้อมูลในฐานข้อมูล
@@ -84,12 +76,9 @@ export const updateListing = async (req, res, next) => {
       { new: true }
     );
 
-    // ตรวจสอบผลลัพธ์
     if (!updatedListing) {
       return next(errorHandler(404, "ไม่สามารถอัปเดตโพสต์ได้"));
     }
-
-    console.log(req.body);
 
     // ส่งข้อมูลโพสต์ที่อัปเดตกลับไปยังผู้ใช้
     res.status(200).json({

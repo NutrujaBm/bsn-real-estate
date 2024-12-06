@@ -57,7 +57,9 @@ const UserManagement = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">จัดการผู้ใช้งาน</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">
+        จัดการผู้ใช้งานภายในระบบ
+      </h1>
       <div
         className="overflow-x-auto"
         style={{ maxHeight: "70vh", overflowY: "auto" }} // Set max height and enable scrolling

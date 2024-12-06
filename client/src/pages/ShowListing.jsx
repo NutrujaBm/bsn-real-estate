@@ -392,7 +392,7 @@ function ShowListings() {
                       />
                     </Link>
                     <Link
-                      className="text-slate-700 font-semibold hover:underline truncate flex-1"
+                      className="text-slate-900 font-semibold hover:underline truncate flex-1"
                       to={`/listing/${listing._id}`}
                     >
                       <p className="text-lg font-semibold ml-5">
@@ -400,23 +400,23 @@ function ShowListings() {
                       </p>
                     </Link>
                   </th>
-                  <td className="px-6 py-4 text-lg border">
+                  <td className="px-6 py-4 text-lg border text-slate-900">
                     {getTypeLabel(listing.type)}
                   </td>
-                  <td className="px-6 py-4 text-lg text-right border">
+                  <td className="px-6 py-4 text-lg text-right border text-slate-900">
                     {formatPrice(listing.price)}
                   </td>
 
-                  <td className="px-6 py-4 text-lg border">
+                  <td className="px-6 py-4 text-lg border text-slate-900">
                     {getStatusLabel(listing.status)}
                   </td>
-                  <td className="px-6 py-4 text-lg border">
+                  <td className="px-6 py-4 text-lg border text-slate-900">
                     {formatDateToThai(listing.createdAt)}
                   </td>
-                  <td className="px-6 py-4 text-lg border">
+                  <td className="px-6 py-4 text-lg border text-slate-900">
                     {formatDateToThai(listing.updatedAt)}
                   </td>
-                  <td className="px-6 py-4 text-lg border">
+                  <td className="px-6 py-4 text-lg border text-slate-900">
                     {formatDateToThai(listing.expiryAt)}
                   </td>
                   <td className="px-2 py-4 text-lg border">

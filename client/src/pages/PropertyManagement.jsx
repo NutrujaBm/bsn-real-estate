@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { FaClipboardCheck, FaTrashAlt, FaSync } from "react-icons/fa"; // นำเข้าไอคอน
 import { HiMiniArrowsUpDown } from "react-icons/hi2";
+import { FaSortUp, FaSortDown } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
 const PropertyManagement = () => {
@@ -297,7 +298,7 @@ const PropertyManagement = () => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold text-center mb-6">
-        ภาพรวมประกาศอสังหาริมทรัพย์
+        จัดการอสังหาริมทรัพย์ภายในระบบ
       </h1>
       <div
         className="overflow-x-auto"
@@ -319,7 +320,17 @@ const PropertyManagement = () => {
                     onClick={() => toggleAlphabeticalOrder("title")}
                     className="text-blue-500 hover:text-blue-700"
                   >
-                    <HiMiniArrowsUpDown />
+                    {alphabeticalOrder === "asc" ? (
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">ก-ฮ</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">ฮ-ก</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </th>
@@ -333,13 +344,23 @@ const PropertyManagement = () => {
                     onClick={() => toggleAlphabeticalOrder("userRef")}
                     className="text-blue-500 hover:text-blue-700"
                   >
-                    <HiMiniArrowsUpDown />
+                    {alphabeticalOrder === "asc" ? (
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">ก-ฮ</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">ฮ-ก</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </th>
               <th
                 className="border border-gray-200 px-4 py-2"
-                style={{ width: "160px" }}
+                style={{ width: "140px" }}
               >
                 <div className="flex items-center justify-between">
                   <span>ประเภท</span>
@@ -347,13 +368,23 @@ const PropertyManagement = () => {
                     onClick={() => toggleAlphabeticalOrder("type")}
                     className="text-blue-500 hover:text-blue-700"
                   >
-                    <HiMiniArrowsUpDown />
+                    {alphabeticalOrder === "asc" ? (
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">ก-ฮ</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">ฮ-ก</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </th>
               <th
                 className="border border-gray-200 px-4 py-2"
-                style={{ width: "160px" }}
+                style={{ width: "200px" }}
               >
                 <div className="flex items-center justify-between">
                   <span>ราคา (บาท)</span>
@@ -362,9 +393,15 @@ const PropertyManagement = () => {
                     className="text-blue-500 hover:text-blue-700"
                   >
                     {priceSortOrder === "asc" ? (
-                      <HiMiniArrowsUpDown />
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">น้อยไปมาก</span>
+                      </>
                     ) : (
-                      <HiMiniArrowsUpDown />
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">มากไปน้อย</span>
+                      </>
                     )}
                   </button>
                 </div>
@@ -372,7 +409,7 @@ const PropertyManagement = () => {
 
               <th
                 className="border border-gray-200 px-4 py-2"
-                style={{ width: "325px" }}
+                style={{ width: "300px" }}
               >
                 <div className="flex items-center justify-between">
                   <span>สถานที่</span>
@@ -380,7 +417,17 @@ const PropertyManagement = () => {
                     onClick={() => toggleAlphabeticalOrder("address")}
                     className="text-blue-500 hover:text-blue-700"
                   >
-                    <HiMiniArrowsUpDown />
+                    {alphabeticalOrder === "asc" ? (
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">ก-ฮ</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">ฮ-ก</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </th>
@@ -395,25 +442,16 @@ const PropertyManagement = () => {
                     onClick={() => toggleAlphabeticalOrder("status")}
                     className="text-blue-500 hover:text-blue-700"
                   >
-                    <HiMiniArrowsUpDown />
-                  </button>
-                </div>
-              </th>
-
-              <th
-                className="border border-gray-200 px-4 py-2"
-                style={{ width: "190px" }}
-              >
-                <div className="flex items-center justify-between">
-                  <span>วันที่ปรับปรุงล่าสุด</span>
-                  <button
-                    onClick={toggleDateSortOrder}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    {dateSortOrder === "desc" ? (
-                      <HiMiniArrowsUpDown />
+                    {alphabeticalOrder === "asc" ? (
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">ก-ฮ</span>
+                      </>
                     ) : (
-                      <HiMiniArrowsUpDown />
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">ฮ-ก</span>
+                      </>
                     )}
                   </button>
                 </div>
@@ -421,7 +459,32 @@ const PropertyManagement = () => {
 
               <th
                 className="border border-gray-200 px-4 py-2"
-                style={{ width: "160px" }}
+                style={{ width: "240px" }}
+              >
+                <div className="flex items-center justify-between">
+                  <span>วันที่ปรับปรุงล่าสุด</span>
+                  <button
+                    onClick={toggleDateSortOrder}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    {dateSortOrder === "asc" ? (
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">ใหม่ไปเก่า</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">เก่าไปใหม่</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </th>
+
+              <th
+                className="border border-gray-200 px-4 py-2"
+                style={{ width: "210px" }}
               >
                 <div className="flex items-center justify-between">
                   <span>วันที่หมดอายุ</span>
@@ -429,10 +492,16 @@ const PropertyManagement = () => {
                     onClick={toggleExpirySortOrder}
                     className="text-blue-500 hover:text-blue-700"
                   >
-                    {expirySortOrder === "desc" ? (
-                      <HiMiniArrowsUpDown />
+                    {expirySortOrder === "asc" ? (
+                      <>
+                        <FaSortUp />
+                        <span className="text-sm">ใหม่ไปเก่า</span>
+                      </>
                     ) : (
-                      <HiMiniArrowsUpDown />
+                      <>
+                        <FaSortDown />
+                        <span className="text-sm">เก่าไปใหม่</span>
+                      </>
                     )}
                   </button>
                 </div>

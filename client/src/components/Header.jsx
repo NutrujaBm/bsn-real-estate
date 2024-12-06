@@ -357,18 +357,18 @@ function Header() {
                       <>
                         <li>
                           <Link
-                            to="/admin"
+                            to="/admin/dashboard"
                             className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
                           >
-                            ภาพรวมของระบบ
+                            Admin Dashboard
                           </Link>
                         </li>
-                        <li>
+                        {/* <li>
                           <Link
                             to="/admin/users"
                             className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
                           >
-                            ผู้ใช้งานภายในระบบ
+                            จัดการผู้ใช้งานภายในระบบ
                           </Link>
                         </li>
                         <li>
@@ -376,9 +376,9 @@ function Header() {
                             to="/admin/properties"
                             className="block px-4 py-4 text-base text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white border-b"
                           >
-                            อสังหาริมทรัพย์ภายในระบบ
+                            จัดการอสังหาริมทรัพย์ภายในระบบ
                           </Link>
-                        </li>
+                        </li> */}
                       </>
                     ) : null
                   ) : null}
