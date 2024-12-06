@@ -33,10 +33,10 @@ export const createListing = async (req, res, next) => {
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 14); // เพิ่ม 14 วัน
 
-    // เพิ่ม expiresAt ลงในข้อมูลที่ส่งมาจาก req.body
+    // เพิ่ม expiryAt ลงในข้อมูลที่ส่งมาจาก req.body
     const listingData = {
       ...req.body,
-      expiresAt: expirationDate, // ตั้งค่าฟิลด์ expiresAt โดยอัตโนมัติ
+      expiryAt: expirationDate, // ตั้งค่าฟิลด์ expiryAt โดยอัตโนมัติ
     };
 
     const listing = await Listing.create(listingData);
@@ -61,7 +61,7 @@ export const updateListing = async (req, res, next) => {
     // อัปเดตสถานะและจัดการวันหมดอายุ
     if (req.body.status === "active") {
       // ถ้าสถานะเป็น active ให้คงวันหมดอายุเดิมไว้
-      req.body.expiresAt = listing.expiresAt;
+      req.body.expiryAt = listing.expiryAt;
     } else if (req.body.status === "closed") {
       // ถ้าสถานะเป็น closed ให้ต่ออายุโพสต์ใหม่
       const newCreatedDate = new Date(); // วันที่กดต่ออายุ
@@ -69,7 +69,7 @@ export const updateListing = async (req, res, next) => {
       newExpirationDate.setDate(newExpirationDate.getDate() + 14); // เพิ่มวันหมดอายุอีก 14 วัน
 
       req.body.createdAt = newCreatedDate;
-      req.body.expiresAt = newExpirationDate;
+      req.body.expiryAt = newExpirationDate;
     }
 
     // เพิ่มการอัปเดตสถานะอย่างง่ายจากโค้ดใหม่
