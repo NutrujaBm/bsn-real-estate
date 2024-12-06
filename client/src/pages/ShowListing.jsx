@@ -366,6 +366,9 @@ function ShowListings() {
                 ปรับปรุงล่าสุด
               </th>
               <th scope="col" className="px-6 py-3 border">
+                วันที่หมดอายุ
+              </th>
+              <th scope="col" className="px-6 py-3 border">
                 จัดการ
               </th>
             </tr>
@@ -379,7 +382,7 @@ function ShowListings() {
                 >
                   <th
                     scope="row"
-                    className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                    className="flex items-center px-2 py-4 text-gray-900 whitespace-nowrap dark:text-white"
                   >
                     <Link to={`/listing/${listing._id}`}>
                       <img
@@ -414,10 +417,13 @@ function ShowListings() {
                     {formatDateToThai(listing.updatedAt)}
                   </td>
                   <td className="px-6 py-4 text-lg border">
+                    {formatDateToThai(listing.expiryAt)}
+                  </td>
+                  <td className="px-2 py-4 text-lg border">
                     {listing.status === "active" && (
                       <>
                         <ul className="flex px-1 text-lg text-gray-700 dark:text-gray-200 ">
-                          <li className="relative group px-3">
+                          <li className="relative group px-1">
                             <button
                               className="flex items-center justify-center w-10 h-10 bg-orange-500 text-white rounded-full hover:bg-orange-600 dark:bg-orange-700 dark:hover:bg-orange-600"
                               onClick={() =>
