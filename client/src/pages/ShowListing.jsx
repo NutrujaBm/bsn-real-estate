@@ -89,16 +89,13 @@ function ShowListings() {
 
   const handleStatusChanges = async (listingId, newStatus, action) => {
     try {
-      const res = await fetch(
-        `http://localhost:5173/api/listing/update/${listingId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
+      const res = await fetch(`/api/listing/update/${listingId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
 
       const data = await res.json();
       if (!data.success) {
