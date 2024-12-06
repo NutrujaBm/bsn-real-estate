@@ -1,72 +1,49 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 function Password() {
-  const [formData, setFormData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmNewPassword: "",
-  });
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { currentUser } = useSelector((state) => state.user);
+  // ใช้ useSelector เพื่อนำ currentUser จาก Redux store
+  const currentUser = useSelector((state) => state.user.currentUser);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(false);
-    setLoading(true);
 
-    if (formData.newPassword !== formData.confirmNewPassword) {
-      setError("รหัสผ่านใหม่ไม่ตรงกัน");
-      setLoading(false);
-      return;
-    }
-
-    if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(formData.newPassword)) {
-      setError(
-        "รหัสผ่านต้องมีตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก และตัวเลขอย่างน้อย 8 ตัวอักษร"
-      );
-      setLoading(false);
-      return;
-    }
-
-    if (formData.currentPassword === formData.newPassword) {
-      setError("รหัสผ่านใหม่ต้องไม่เหมือนกับรหัสผ่านปัจจุบัน");
-      setLoading(false);
+    // ตรวจสอบว่า รหัสผ่านใหม่และยืนยันรหัสผ่านตรงกันหรือไม่
+    if (newPassword !== confirmPassword) {
+      setError("รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน");
       return;
     }
 
     try {
-      const res = await fetch(`/api/user/update-password/${currentUser._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          oldPassword: formData.currentPassword,
-          password: formData.newPassword,
-        }),
-      });
+      // ส่งคำขอไปยัง API สำหรับการอัปเดตรหัสผ่าน
+      const response = await axios.put(
+        `/api/user/update-password/${currentUser._id}`, // เพิ่มเครื่องหมาย / ก่อน currentUser._id
+        {
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }
+      );
+      setSuccessMessage(response.data.message);
+      setError("");
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.message || "เกิดข้อผิดพลาด");
-        setLoading(false);
-        return;
-      }
-
-      setSuccess(true);
-      setLoading(false);
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-      setLoading(false);
+      // แสดงการแจ้งเตือนสำเร็จแล้วลบข้อความหลังจาก 3 วินาที
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000); // 3000ms = 3 วินาที
+    } catch (err) {
+      setError(
+        err.response.data.message || "เกิดข้อผิดพลาดในการอัพเดตรหัสผ่าน"
+      );
+      setSuccessMessage("");
     }
   };
 
@@ -82,11 +59,12 @@ function Password() {
           </label>
           <input
             type="password"
-            name="currentPassword"
+            id="currentPassword"
             placeholder="ใส่รหัสปัจจุบัน"
             className="border p-3 rounded-lg text-base w-full"
-            value={formData.currentPassword}
-            onChange={handleChange}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            required
           />
         </div>
         <div className="mb-6">
@@ -95,11 +73,12 @@ function Password() {
           </label>
           <input
             type="password"
-            name="newPassword"
+            id="newPassword"
+            value={newPassword}
             placeholder="ใส่รหัสผ่านใหม่"
             className="border p-3 rounded-lg text-base w-full"
-            value={formData.newPassword}
-            onChange={handleChange}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
           />
         </div>
         <div className="mb-6">
@@ -108,17 +87,19 @@ function Password() {
           </label>
           <input
             type="password"
-            name="confirmNewPassword"
+            id="confirmPassword"
+            value={confirmPassword}
             placeholder="ยืนยันรหัสผ่านใหม่"
             className="border p-3 rounded-lg text-base w-full"
-            value={formData.confirmNewPassword}
-            onChange={handleChange}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
           />
         </div>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        {success && (
-          <p className="text-green-500 mb-4">เปลี่ยนรหัสผ่านสำเร็จ!</p>
+        {error && <div className="error-message">{error}</div>}
+        {successMessage && (
+          <div className="success-message">{successMessage}</div>
         )}
+
         {loading && <p className="text-gray-500 mb-4">กำลังโหลด...</p>}
         <button
           type="submit"

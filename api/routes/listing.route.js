@@ -12,12 +12,27 @@ import {
 
 const router = express.Router();
 
-router.get("/all", getListings);
-router.get("/get/:id", getListingById);
-router.post("/create", verifyToken, createListing);
-router.post("/update/:id", verifyToken, updateListing);
-router.delete("/delete/:id", verifyToken, deleteListing);
-router.get("/get", getListing);
-router.get("/search", searchListing);
+// ============================
+// GET requests
+// ============================
+router.get("/all", getListings); // Get all listings
+router.get("/get/:id", getListingById); // Get a specific listing by ID
+router.get("/get", getListing); // Get a filtered or default listing
+router.get("/search", searchListing); // Search for listings
+
+// ============================
+// POST requests
+// ============================
+router.post("/create", verifyToken, createListing); // Create a new listing
+
+// ============================
+// PUT requests
+// ============================
+router.put("/update/:id", verifyToken, updateListing); // Update an existing listing
+
+// ============================
+// DELETE requests
+// ============================
+router.delete("/delete/:id", verifyToken, deleteListing); // Delete a listing by ID
 
 export default router;

@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ตั้งค่า Cron Job ให้รันทุกวันเวลาเที่ยงคืน
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   try {
     const now = new Date();
     const result = await Listing.updateMany(

@@ -39,20 +39,6 @@ export const updateUser = async (req, res, next) => {
 
   try {
     if (req.body.password && req.user.role !== "admin") {
-      // ตรวจสอบรหัสผ่านเก่า (ยกเว้น admin)
-      const user = await User.findById(req.params.id);
-      const isOldPasswordValid = await bcrypt.compare(
-        req.body.oldPassword,
-        user.password
-      );
-
-      if (!isOldPasswordValid) {
-        return next(errorHandler(400, "Old password is incorrect"));
-      }
-
-      req.body.password = bcrypt.hashSync(req.body.password, 10);
-    } else if (req.body.password && req.user.role === "admin") {
-      // ถ้าเป็น admin และกำหนด password ใหม่ ให้ hash โดยไม่ตรวจสอบรหัสผ่านเก่า
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
 
@@ -120,42 +106,36 @@ export const getUserListings = async (req, res, next) => {
 };
 
 export const updatePassword = async (req, res, next) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  // ตรวจสอบว่ารหัสผ่านใหม่และยืนยันรหัสผ่านตรงกัน
+  if (newPassword !== confirmPassword) {
+    return next(errorHandler(400, "รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน"));
+  }
+
   try {
-    // Debug Logs
-    console.log("req.user:", req.user);
-    console.log("req.params.id:", req.params.id);
-    console.log("req.body:", req.body);
-
-    if (req.user.id !== req.params.id && req.user.role !== "admin") {
-      return res
-        .status(403)
-        .json({ message: "Unauthorized to update password" });
-    }
-
     const user = await User.findById(req.user.id);
+
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return next(errorHandler(404, "ไม่พบผู้ใช้"));
     }
 
-    const isOldPasswordValid = await bcrypt.compare(
-      req.body.oldPassword,
-      user.password
-    );
-
-    if (!isOldPasswordValid) {
-      return res.status(400).json({ message: "Old password is incorrect" });
+    // ตรวจสอบว่ารหัสผ่านปัจจุบันถูกต้องหรือไม่
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return next(errorHandler(400, "รหัสผ่านปัจจุบันไม่ถูกต้อง"));
     }
 
-    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+    // แฮชรหัสผ่านใหม่ก่อนที่จะบันทึก
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+    // อัพเดตรหัสผ่าน
     user.password = hashedPassword;
     await user.save();
 
-    res
-      .status(200)
-      .json({ success: true, message: "Password updated successfully" });
+    res.status(200).json({ message: "อัพเดตรหัสผ่านสำเร็จ" });
   } catch (error) {
-    console.error("Update password error:", error); // Debug error
-    next(error);
+    return next(error);
   }
 };
 

@@ -90,7 +90,7 @@ function ShowListings() {
   const handleStatusChanges = async (listingId, newStatus, action) => {
     try {
       const res = await fetch(`/api/listing/update/${listingId}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
