@@ -608,7 +608,7 @@ const PropertyManagement = () => {
                       : "ไม่มี"}
                   </td>
 
-                  <td className="px-1 py-5 flex justify-center items-center space-x-6 my-auto">
+                  <td className="px-5 py-5 flex justify-start items-center space-x-6 my-auto">
                     {listing.status === "active" && (
                       <>
                         <div className="group relative">
