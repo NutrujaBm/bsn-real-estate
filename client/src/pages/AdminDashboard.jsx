@@ -99,12 +99,14 @@ const AdminDashboard = () => {
         display: true,
         font: {
           size: 18, // ขนาดฟอนต์ของ title
+          family: "Noto Sans Thai",
         },
       },
       legend: {
         labels: {
           font: {
             size: 18, // ขนาดฟอนต์ของ legend
+            family: "Noto Sans Thai",
           },
         },
       },
@@ -114,6 +116,7 @@ const AdminDashboard = () => {
         ticks: {
           font: {
             size: 16, // ขนาดฟอนต์ของ ticks บนแกน X
+            family: "Noto Sans Thai",
           },
         },
       },
@@ -121,6 +124,7 @@ const AdminDashboard = () => {
         ticks: {
           font: {
             size: 16, // ขนาดฟอนต์ของ ticks บนแกน Y
+            family: "Noto Sans Thai",
           },
         },
       },
