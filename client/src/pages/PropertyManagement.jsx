@@ -556,7 +556,7 @@ const PropertyManagement = () => {
                     {listing.type === "condo"
                       ? "คอนโด"
                       : listing.type === "apartment"
-                      ? "อพาร์ทเมนต์"
+                      ? "อพาร์ทเม้นท์"
                       : listing.type}
                   </td>
 

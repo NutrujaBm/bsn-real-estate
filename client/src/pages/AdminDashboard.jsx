@@ -78,7 +78,7 @@ const AdminDashboard = () => {
         backgroundColor: "#2196F3",
       },
       {
-        label: "โพสต์อพาร์ตเมนต์",
+        label: "โพสต์อพาร์ตเม้นท์",
         data: [],
         backgroundColor: "#FF9800",
       },
@@ -91,21 +91,26 @@ const AdminDashboard = () => {
     closed: 0,
   });
 
-  // กำหนด options สำหรับการปรับขนาดข้อความในกราฟ
-  const chartOptions = {
+  const monthlyUsersChartOptions = {
     responsive: true,
     plugins: {
       title: {
         display: true,
+        text: "จำนวนผู้ใช้", // เพิ่มข้อความที่คุณต้องการแสดง
         font: {
-          size: 18, // ขนาดฟอนต์ของ title
+          size: 16,
           family: "Noto Sans Thai",
         },
+        padding: {
+          top: 20, // ปรับระยะห่างด้านบน
+          bottom: -10, // ระยะห่างด้านล่าง
+        },
+        align: "start", // จัดตำแหน่งชิดซ้าย (ตามกรอบแกน Y)
       },
       legend: {
         labels: {
           font: {
-            size: 18, // ขนาดฟอนต์ของ legend
+            size: 18,
             family: "Noto Sans Thai",
           },
         },
@@ -115,15 +120,66 @@ const AdminDashboard = () => {
       x: {
         ticks: {
           font: {
-            size: 16, // ขนาดฟอนต์ของ ticks บนแกน X
+            size: 16,
             family: "Noto Sans Thai",
           },
         },
       },
       y: {
+        title: {
+          display: false, // ซ่อน title ของแกน Y เดิม
+        },
         ticks: {
           font: {
-            size: 16, // ขนาดฟอนต์ของ ticks บนแกน Y
+            size: 16,
+            family: "Noto Sans Thai",
+          },
+        },
+      },
+    },
+  };
+
+  const postComparisonChartOptions = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: "จำนวนโพสต์", // เพิ่มข้อความที่คุณต้องการแสดง
+        font: {
+          size: 16,
+          family: "Noto Sans Thai",
+        },
+        padding: {
+          top: 20, // ปรับระยะห่างด้านบน
+          bottom: -5, // ระยะห่างด้านล่าง
+        },
+        align: "start", // จัดตำแหน่งชิดซ้าย (ตามกรอบแกน Y)
+      },
+      legend: {
+        labels: {
+          font: {
+            size: 18,
+            family: "Noto Sans Thai",
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          font: {
+            size: 16,
+            family: "Noto Sans Thai",
+          },
+        },
+      },
+      y: {
+        title: {
+          display: false, // ซ่อน title ของแกน Y เดิม
+        },
+        ticks: {
+          font: {
+            size: 16,
             family: "Noto Sans Thai",
           },
         },
@@ -271,8 +327,9 @@ const AdminDashboard = () => {
 
       {/* Section 2: Graphs */}
       <div className="flex space-x-8">
-        <div className="flex-1 space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-800">
+        {/* กราฟผู้ใช้งานรายเดือน */}
+        <div className="flex-1 space-y-1">
+          <h2 className="text-2xl font-semibold text-gray-800 pb-5">
             ผู้ใช้งานรายเดือน
           </h2>
           <select
@@ -282,14 +339,15 @@ const AdminDashboard = () => {
           >
             <option value="2024">2024</option>
           </select>
-          <Line data={monthlyUsersData} options={chartOptions} />
+          <Line data={monthlyUsersData} options={monthlyUsersChartOptions} />
         </div>
 
-        <div className="flex-1 space-y-20">
+        {/* กราฟเปรียบเทียบโพสต์ */}
+        <div className="flex-1 space-y-17">
           <h2 className="text-2xl font-semibold text-gray-800">
             เปรียบเทียบโพสต์
           </h2>
-          <Bar data={postComparisonData} options={chartOptions} />
+          <Bar data={postComparisonData} options={postComparisonChartOptions} />
         </div>
       </div>
     </div>
